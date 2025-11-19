@@ -11,11 +11,11 @@ body {
 }
 
 :root {
-  /* Professional gradient colors (can be adjusted) */
-  --brand-start: #0f172a; /* slate-900 */
-  --brand-end:   #0ea5a4; /* teal-400 */
-  --accent:      #0369a1; /* blue-600 */
-  --muted:       #64748b; /* slate-500 */
+  /* Green palette */
+  --brand-start: #064e3b; /* emerald-900 / dark green */
+  --brand-end:   #34d399; /* emerald-300 / light green */
+  --accent:      #059669; /* emerald-600 */
+  --muted:       #2f855a; /* green-600 (muted text) */
 }
 
 /* Re-usable utility-like classes that use CSS variables */
