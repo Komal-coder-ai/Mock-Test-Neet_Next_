@@ -20,7 +20,7 @@ function Header() {
 
   return (
     <>
-      {(userId && role == "admina")&& (
+      {(userId && role == "admin")&& (
         <header className="bg-white shadow">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <Link href="/" className="font-bold">

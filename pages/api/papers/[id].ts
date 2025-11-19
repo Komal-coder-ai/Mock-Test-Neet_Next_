@@ -26,20 +26,73 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         counts[key] = (counts[key] || 0) + 1
       })
 
+      // Normalize questions for API consumer: expose only needed fields and ensure subject exists
+      // include _id so admin UIs can reference specific questions
+      const normalizedAllQuestions = (paper.questions || []).map((q: any) => ({
+        _id: q._id,
+        text: q.text,
+        options: q.options,
+        correctIndex: q.correctIndex,
+        subject: q.subject || ''
+      }))
+
       if (subject && subject.toLowerCase() !== 'all') {
         const subjLower = subject.toLowerCase()
+        const filteredQuestions = (paper.questions || []).filter((q: any) => {
+          const qsub = String(q.subject || '').toLowerCase()
+          return qsub === subjLower || (includeUnspecified && !qsub)
+        }).map((q: any) => ({
+          _id: q._id,
+          text: q.text,
+          options: q.options,
+          correctIndex: q.correctIndex,
+          subject: q.subject || ''
+        }))
+
         const filtered = {
           ...paper,
-          questions: (paper.questions || []).filter((q: any) => {
-            const qsub = String(q.subject || '').toLowerCase()
-            return qsub === subjLower || (includeUnspecified && !qsub)
-          })
+          questions: filteredQuestions
         }
         return res.status(200).json({ ok: true, paper: filtered, subjectCounts: counts })
       }
 
-      return res.status(200).json({ ok: true, paper, subjectCounts: counts })
+      const fullPaper = {
+        ...paper,
+        questions: normalizedAllQuestions
+      }
+
+      return res.status(200).json({ ok: true, paper: fullPaper, subjectCounts: counts })
     } catch (err: any) {
+      console.error(err)
+      return res.status(500).json({ ok: false, error: 'Server error' })
+    }
+  }
+
+  if (req.method === 'PUT') {
+    // update paper metadata
+    const { adminPhone, title, durationMinutes, totalQuestions, date, icon, source, official, exam, name } = req.body || {}
+    if (!adminPhone) return res.status(403).json({ ok: false, error: 'adminPhone required' })
+    try {
+      const User = (await import('../../../models/User')).default
+      const admin = await User.findOne({ phone: adminPhone })
+      if (!admin || admin.role !== 'admin') return res.status(403).json({ ok: false, error: 'Not authorized' })
+
+      const paperDoc = await (await import('../../../models/Paper')).default.findById(id)
+      if (!paperDoc) return res.status(404).json({ ok: false, error: 'Paper not found' })
+
+      if (title !== undefined) paperDoc.title = title
+      if (durationMinutes !== undefined) paperDoc.durationMinutes = durationMinutes
+      if (totalQuestions !== undefined) paperDoc.totalQuestions = totalQuestions
+      if (date !== undefined) paperDoc.date = date ? new Date(date) : undefined
+      if (icon !== undefined) paperDoc.icon = icon
+      if (source !== undefined) paperDoc.source = source
+      if (official !== undefined) paperDoc.official = !!official
+      if (exam !== undefined) paperDoc.exam = exam
+      if (name !== undefined) paperDoc.name = name
+
+      await paperDoc.save()
+      return res.status(200).json({ ok: true, paper: paperDoc })
+    } catch (err) {
       console.error(err)
       return res.status(500).json({ ok: false, error: 'Server error' })
     }

@@ -40,7 +40,8 @@ export default function TestRunner() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [marked, setMarked] = useState<Record<number, boolean>>({})
-  const [activeSubject, setActiveSubject] = useState<'Physics' | 'Chemistry' | 'Mathematics' | 'All'>('All')
+  const [activeSubject, setActiveSubject] = useState<string>('All')
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({})
 
   // timer
   const [remaining, setRemaining] = useState<number>(0)
@@ -54,6 +55,7 @@ export default function TestRunner() {
       .then((data) => {
         if (data?.ok) {
           setPaper(data.paper)
+          setSubjectCounts(data.subjectCounts || {})
           const mins = data.paper?.durationMinutes || 30
           setRemaining(mins * 60)
         }
@@ -103,11 +105,27 @@ export default function TestRunner() {
   const questions = paper?.questions || []
   const total = questions.length || paper?.totalQuestions || 0
 
-  const subjects: Array<'Physics' | 'Chemistry' | 'Mathematics' | 'All'> = ['All', 'Physics', 'Chemistry', 'Mathematics']
+  // derive subjects from API-provided subjectCounts (keep 'All' first)
+  // include Unspecified if present so user can filter those questions too
+  const subjects: string[] = [
+    'All',
+    ...Object.keys(subjectCounts || {})
+      .filter((k) => k && String(k).toLowerCase() !== '')
+      .sort((a, b) => {
+        // keep Unspecified at the end
+        if (String(a).toLowerCase() === 'unspecified') return 1
+        if (String(b).toLowerCase() === 'unspecified') return -1
+        return String(a).localeCompare(String(b))
+      })
+  ]
 
-  function filteredIndicesForSubject(subj: typeof activeSubject) {
-    if (subj === 'All') return questions.map((_, i) => i)
-    return questions.map((q, i) => ({ q, i })).filter((x) => (x.q.subject || '').toLowerCase() === subj.toLowerCase()).map((x) => x.i)
+  function filteredIndicesForSubject(subj: string) {
+    if (!subj || subj.toLowerCase() === 'all') return questions.map((_, i) => i)
+    const subjLower = subj.toLowerCase()
+    return questions
+      .map((q, i) => ({ q, i }))
+      .filter((x) => String(x.q.subject || '').toLowerCase() === subjLower)
+      .map((x) => x.i)
   }
 
   const answeredCount = Object.keys(selectedAnswers).length
