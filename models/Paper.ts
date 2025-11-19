@@ -6,6 +6,11 @@ export interface IPaper extends Document {
   durationMinutes: number
   totalQuestions: number
   date?: Date
+  questions?: Array<{
+    text: string
+    options: string[]
+    correctIndex: number
+  }>
   createdAt: Date
 }
 
@@ -15,7 +20,14 @@ const PaperSchema: Schema = new Schema(
     category: { type: String, enum: ['JEE', 'NEET'], required: true },
     durationMinutes: { type: Number, required: true },
     totalQuestions: { type: Number, required: true },
-    date: { type: Date }
+    date: { type: Date },
+    questions: [
+      {
+        text: { type: String, required: true },
+        options: { type: [String], required: true },
+        correctIndex: { type: Number, required: true }
+      }
+    ]
   },
   { timestamps: true }
 )

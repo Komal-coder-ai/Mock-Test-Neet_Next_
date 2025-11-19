@@ -11,7 +11,7 @@ function generateOtp() {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { name, phone, aadhar } = req.body || {}
+  const { name, phone, aadhar, type } = req.body || {}
   if (!name || !phone) return res.status(400).json({ error: 'Name and phone are required' })
 
   try {
@@ -19,11 +19,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let user = await User.findOne({ phone })
     if (!user) {
-      user = await User.create({ name, phone, aadhar })
+      const role = type === 'admin' ? 'admin' : 'user'
+      user = await User.create({ name, phone, aadhar, role })
     } else {
       // update aadhar/name if provided
       if (aadhar) user.aadhar = aadhar
       if (name) user.name = name
+      // allow upgrading to admin if type explicitly provided
+      if (type === 'admin') user.role = 'admin'
     }
 
     // generate OTP and save (no real SMS; return OTP in response for now)

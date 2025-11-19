@@ -1,19 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from './../../../lib/mongoose'
 import Paper from './../../../models/Paper'
+import User from './../../../models/User'
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
 
   if (req.method === 'POST') {
-    const { title, category, durationMinutes, totalQuestions, date } = req.body || {}
+    const { title, category, durationMinutes, totalQuestions, date, adminPhone } = req.body || {}
     if (!title || !category || !durationMinutes || !totalQuestions) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
+    // simple admin check: require adminPhone and verify role
+    if (!adminPhone) return res.status(403).json({ error: 'adminPhone required to create paper' })
     try {
-      const paper = await Paper.create({ title, category, durationMinutes, totalQuestions, date: date ? new Date(date) : undefined })
+      const admin = await User.findOne({ phone: adminPhone })
+      if (!admin || (admin.role !== 'admin')) return res.status(403).json({ error: 'Not authorized' })
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({ error: 'Server error' })
+    }
+
+    try {
+      const paper = await Paper.create({ title, category, durationMinutes, totalQuestions, date: date ? new Date(date) : undefined, questions: [] })
       return res.status(201).json({ ok: true, paper })
     } catch (err) {
       console.error(err)
