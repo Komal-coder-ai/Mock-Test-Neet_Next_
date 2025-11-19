@@ -1,7 +1,22 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const router = useRouter()
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      const phone = localStorage.getItem('userPhone')
+      const userId = localStorage.getItem('userId')
+      if (token || phone || userId) {
+        // already logged in -> redirect to dashboard
+        router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`)
+      }
+    } catch (e) {}
+  }, [])
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
       <motion.div

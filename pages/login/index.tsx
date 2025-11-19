@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -74,6 +74,19 @@ function OTPBoxes({
 
 export default function LoginPage() {
   const router = useRouter();
+  // redirect if already logged in
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      const phone = localStorage.getItem('userPhone')
+      const userId = localStorage.getItem('userId')
+      const role = localStorage.getItem('userRole')
+      if (token || phone || userId) {
+        if (role === 'admin') router.replace('/admin/dashboard')
+        else router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`)
+      }
+    } catch (e) {}
+  }, [])
   const [step, setStep] = useState<"request" | "verify">("request");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
