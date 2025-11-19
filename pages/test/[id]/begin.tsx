@@ -32,7 +32,7 @@ type Paper = {
 
 export default function TestRunner() {
   const router = useRouter()
-  const { id } = router.query
+  const { id, phone } = router.query
   const [paper, setPaper] = useState<Paper | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -499,10 +499,31 @@ export default function TestRunner() {
                               const qid = q && (q as any)._id ? String((q as any)._id) : String(i)
                               if (selectedAnswers[i] !== undefined) answersMap[qid] = selectedAnswers[i]
                             }
+                            // include both answers keyed by qid and by index (fallback)
+                            // determine userPhone: prefer query param, fallback to localStorage
+                            let userPhone: string | null = null
+                            try {
+                              if (phone && typeof phone === 'string') userPhone = phone
+                              else {
+                                const stored = localStorage.getItem('userPhone') || localStorage.getItem('user')
+                                if (stored) {
+                                  try { const parsed = JSON.parse(stored); userPhone = parsed?.phone || parsed?.userPhone || String(parsed) } catch { userPhone = String(stored) }
+                                }
+                              }
+                            } catch (e) {
+                              console.warn('Error reading user phone from storage', e)
+                            }
+
                             const resp = await fetch(`/api/papers/${String(id)}/submit`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ answers: answersMap })
+                              body: JSON.stringify({
+                                answers: answersMap,
+                                answersByIndex: selectedAnswers,
+                                save: !!userPhone,
+                                userPhone: userPhone || undefined,
+                                paperTitle: paper?.title || undefined
+                              })
                             })
                             const data = await resp.json()
                             if (resp.ok && data?.ok) {

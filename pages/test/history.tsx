@@ -10,7 +10,12 @@ export default function TestHistory() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // try to get userPhone from localStorage (depends on your auth implementation)
+    // try to get userPhone from query param first, then localStorage
+    const q = router.query?.phone
+    if (q && typeof q === 'string') {
+      setUserPhone(q)
+      return
+    }
     try {
       const up = localStorage.getItem('userPhone') || localStorage.getItem('user')
       if (up) {

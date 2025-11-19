@@ -8,8 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' })
 
-  const { answers } = req.body || {}
-  if (!answers || typeof answers !== 'object') return res.status(400).json({ ok: false, error: 'Missing answers' })
+  const { answers, answersByIndex } = req.body || {}
+  if ((!answers || typeof answers !== 'object') && (!answersByIndex || typeof answersByIndex !== 'object')) {
+    return res.status(400).json({ ok: false, error: 'Missing answers' })
+  }
 
   try {
     await connectToDatabase()
@@ -28,8 +30,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i]
-      const qid = q && q._id ? String(q._id) : String(i)
-      const selected = answers[qid]
+  const qid = q && q._id ? String(q._id) : String(i)
+  // Accept answer keyed by question _id (preferred) or by numeric index (fallback)
+  const selected = (answers && (answers[qid] !== undefined ? answers[qid] : undefined)) ?? (answersByIndex && (answersByIndex[String(i)] !== undefined ? answersByIndex[String(i)] : answersByIndex[i]))
       const isAnswered = selected !== undefined && selected !== null
       const correct = typeof q.correctIndex === 'number' ? q.correctIndex : null
       const isCorrect = isAnswered && correct !== null && Number(selected) === Number(correct)
