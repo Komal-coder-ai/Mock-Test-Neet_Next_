@@ -11,8 +11,8 @@ type PaperItem = {
 }
 
 export default function Dashboard() {
-  const { query } = useRouter()
-  const phone = typeof query.phone === 'string' ? query.phone : ''
+  const router = useRouter()
+  const phone = typeof router.query.phone === 'string' ? router.query.phone : ''
   const [user, setUser] = useState<any | null>(null)
 
   // papers
@@ -22,7 +22,6 @@ export default function Dashboard() {
   const [limit] = useState(5)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [showCreate, setShowCreate] = useState(false)
 
   useEffect(() => {
     if (!phone) return
@@ -61,32 +60,6 @@ export default function Dashboard() {
     }
   }
 
-  async function createPaper(e: React.FormEvent) {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement & { title: { value: string }; duration: { value: string }; total: { value: string }; date: { value: string } }
-    const title = form.title.value.trim()
-    const durationMinutes = parseInt(form.duration.value || '0', 10)
-    const totalQuestions = parseInt(form.total.value || '0', 10)
-    const date = form.date.value || undefined
-    if (!title || !durationMinutes || !totalQuestions) return
-    try {
-      const res = await fetch('/api/papers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, category, durationMinutes, totalQuestions, date })
-      })
-      const data = await res.json()
-      if (res.ok) {
-        // refresh list
-        setShowCreate(false)
-        fetchPapers()
-      } else {
-        alert(data?.error || 'Failed to create')
-      }
-    } catch (err) {
-      console.error(err)
-    }
-  }
 
   const totalPages = Math.max(1, Math.ceil(total / limit))
 
@@ -116,43 +89,27 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold">Available Question Papers</h1>
           <div className="flex items-center gap-3">
             <div className="rounded-full border px-3 py-1">Filter</div>
-            <button className="btn-primary" onClick={() => setShowCreate((s) => !s)}>Create Paper</button>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="mt-6 flex gap-3">
-          <button className={`px-4 py-2 rounded ${category === 'JEE' ? 'bg-accent text-white' : 'bg-white border'}`} onClick={() => setCategory('JEE')}>JEE</button>
-          <button className={`px-4 py-2 rounded ${category === 'NEET' ? 'bg-accent text-white' : 'bg-white border'}`} onClick={() => setCategory('NEET')}>NEET</button>
+          <button
+            className={`px-4 py-2 rounded ${category === 'JEE' ? 'bg-brand-gradient text-white shadow' : 'bg-white border border-green-200 text-green-700'}`}
+            onClick={() => setCategory('JEE')}
+          >
+            JEE
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${category === 'NEET' ? 'bg-brand-gradient text-white shadow' : 'bg-white border border-green-200 text-green-700'}`}
+            onClick={() => setCategory('NEET')}
+          >
+            NEET
+          </button>
         </div>
 
         {/* Create form */}
-        {showCreate && (
-          <form onSubmit={createPaper} className="mt-6 p-4 bg-white rounded shadow space-y-3">
-            <div>
-              <label className="block text-sm font-medium">Paper Name</label>
-              <input name="title" className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="block text-sm font-medium">Time (mins)</label>
-                <input name="duration" type="number" className="mt-1 block w-full border rounded p-2" required />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Total Questions</label>
-                <input name="total" type="number" className="mt-1 block w-full border rounded p-2" required />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Date</label>
-                <input name="date" type="date" className="mt-1 block w-full border rounded p-2" />
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button className="btn-primary px-4 py-2" type="submit">Create</button>
-              <button type="button" className="px-4 py-2 border rounded" onClick={() => setShowCreate(false)}>Cancel</button>
-            </div>
-          </form>
-        )}
+        {/* Create flow removed: API-only workflow. Use Postman to POST to /api/papers */}
 
         {/* List */}
         <div className="mt-6 space-y-4">
@@ -164,7 +121,12 @@ export default function Dashboard() {
                 <div className="mt-1 muted text-sm">⏱ {p.durationMinutes} mins • {p.totalQuestions} Questions • {p.date ? new Date(p.date).toLocaleDateString() : 'Latest'}</div>
               </div>
               <div>
-                <button className="px-4 py-2 bg-white border rounded text-accent">Start Test</button>
+                <button
+                  className="px-4 py-2 bg-white border rounded text-accent"
+                  onClick={() => router.push(`/test/${p._id}?phone=${encodeURIComponent(phone)}`)}
+                >
+                  Start Test
+                </button>
               </div>
             </div>
           ))}
