@@ -6,7 +6,6 @@ export default function RegisterPage() {
   const router = useRouter()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [aadhar, setAadhar] = useState('')
   const [otp, setOtp] = useState('')
   const [step, setStep] = useState<'form' | 'verify'>('form')
   const [message, setMessage] = useState<string | null>(null)
@@ -23,7 +22,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, aadhar })
+        body: JSON.stringify({ name, phone })
       })
       const data = await res.json()
       if (res.ok) {
@@ -53,7 +52,8 @@ export default function RegisterPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        router.push('/dashboard')
+        // after registration verify, go to Aadhar entry screen for extra details
+        router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
       } else {
         setError(data?.error || 'OTP verification failed')
       }
@@ -78,10 +78,7 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium">Phone</label>
               <input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 block w-full border rounded p-2" required />
             </div>
-            <div>
-              <label className="block text-sm font-medium">Aadhar (optional)</label>
-              <input value={aadhar} onChange={(e) => setAadhar(e.target.value)} className="mt-1 block w-full border rounded p-2" />
-            </div>
+            {/* Aadhar will be collected after OTP verification on the Aadhar page */}
             {message && <p className="text-sm text-green-600">{message}</p>}
             {error && <p className="text-sm text-red-600">{error}</p>}
             <div>
