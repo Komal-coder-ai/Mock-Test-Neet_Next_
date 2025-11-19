@@ -11,11 +11,12 @@ body {
 }
 
 :root {
-  /* Green palette */
-  --brand-start: #064e3b; /* emerald-900 / dark green */
-  --brand-end:   #34d399; /* emerald-300 / light green */
-  --accent:      #059669; /* emerald-600 */
-  --muted:       #2f855a; /* green-600 (muted text) */
+  /* Government exam palette: deep navy -> teal accent */
+  --brand-start: #0b3d91; /* deep navy */
+  --brand-end:   #0ea5a4; /* teal-ish accent */
+  --accent:      #0b61b7; /* brighter blue accent */
+  --muted:       #475569; /* slate-600 for muted text */
+  --danger:      #b91c1c; /* red for errors */
 }
 
 /* Re-usable utility-like classes that use CSS variables */
@@ -35,16 +36,17 @@ body {
 .btn-primary {
   background-image: linear-gradient(90deg, var(--brand-start), var(--brand-end));
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 600;
 }
 
 /* Hero left cover styles */
 .hero-left {
-  background-image: linear-gradient(120deg, var(--brand-start), #062a2a 50%, var(--brand-end));
+  background-image: linear-gradient(120deg, var(--brand-start), rgba(6,42,42,0.85) 50%, var(--brand-end));
   color: white;
 }
 
@@ -67,5 +69,19 @@ body {
   border-radius: 0.75rem;
   box-shadow: 0 10px 30px rgba(15,23,42,0.08);
 }
+
+/* Error message style with left accent border */
+.error-left {
+  background: #fff7f7;
+  border-left: 4px solid var(--danger);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  color: var(--danger);
+}
+
+/* Toast variants using palette */
+.toast-info { background: white; border: 1px solid #e6eefb; color: #0b3d91 }
+.toast-success { background: #ecfdf5; border: 1px solid #bbf7d0; color: #065f46 }
+.toast-error { background: #fff1f2; border: 1px solid #fecaca; color: var(--danger) }
 
 

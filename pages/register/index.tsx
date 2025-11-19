@@ -15,6 +15,10 @@ export default function RegisterPage() {
         <div className="max-w-md">
           <h1 className="hero-title font-extrabold">Build confidence with real mock tests</h1>
           <p className="mt-4 muted">Register and get started with realistic JEE & NEET mock tests, analytics and learning paths.</p>
+          <div className="mt-4 text-sm">
+            <p className="mb-2">Create your profile to track performance across full tests and topic-wise quizzes. Use analytics to focus revision and improve weak areas.</p>
+            <p className="text-xs muted">Accounts are free for trial; your data is used only to provide personalized test recommendations.</p>
+          </div>
           <div className="mt-6">
             <p className="text-sm muted">Have an account? <a href="/login" className="text-accent font-medium">Login</a></p>
           </div>

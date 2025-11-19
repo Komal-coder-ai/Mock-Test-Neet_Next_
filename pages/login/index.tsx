@@ -31,7 +31,7 @@ function OTPBoxes({ value, onChange }: { value: string; onChange: (v: string) =>
       {Array.from({ length: 6 }).map((_, i) => (
         <input
           key={i}
-          ref={(el) => (inputs.current[i] = el!)}
+          ref={(el) => { inputs.current[i] = el! }}
           value={chars[i] || ''}
           onChange={(e) => handleChange(i, e.target.value.replace(/[^0-9]/g, '').slice(0, 1))}
           onKeyDown={(e) => handleKeyDown(e, i)}
@@ -58,6 +58,10 @@ export default function LoginPage() {
         <div className="max-w-md">
           <h1 className="hero-title font-extrabold">Welcome back</h1>
           <p className="mt-4 muted">Sign in with your phone to continue your prep journey.</p>
+          <div className="mt-4 text-sm">
+            <p className="mb-2">Use the same phone number you registered with. You will receive a 6-digit OTP to verify your identity.</p>
+            <p className="text-xs muted">Tip: Keep your phone nearby and ensure network connectivity for OTP delivery.</p>
+          </div>
           <div className="mt-6">
             <Link href="/register" className="px-4 py-2 bg-white text-black rounded font-medium">Create account</Link>
           </div>
@@ -130,8 +134,8 @@ export default function LoginPage() {
                       </Field>
                       {touched.phone && <ErrorMsg>{errors.phone}</ErrorMsg>}
                     </div>
-                    {message && <div className="text-sm text-green-600">{message}</div>}
-                    {error && <div className="text-sm text-red-600">{error}</div>}
+                    {message && <div className="text-sm text-green-700">{message}</div>}
+                    {error && <ErrorMsg>{error}</ErrorMsg>}
                     <div>
                       <button className="w-full btn-primary py-3" type="submit" disabled={isSubmitting}>Send OTP</button>
                     </div>
@@ -186,6 +190,7 @@ export default function LoginPage() {
           </Formik>
 
           <p className="mt-4 text-sm muted">Don't have an account? <Link href="/register" className="text-accent font-medium">Register</Link></p>
+          <div className="mt-3 text-xs text-gray-600">By signing in you agree to our terms of service and accept that your progress will be stored for personalised recommendations.</div>
           <Toast message={message || error || null} type={error ? 'error' : 'success'} onClose={() => { setMessage(null); setError(null) }} />
         </motion.div>
       </div>
