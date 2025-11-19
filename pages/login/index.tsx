@@ -20,8 +20,23 @@ function OTPBoxes({
     const chars = value.split("");
     while (chars.length < 6) chars.push("");
     chars[index] = val;
-    onChange(chars.join("").slice(0, 6));
+    const final = chars.join("").slice(0, 6);
+    onChange(final);
     if (val && index < 5) inputs.current[index + 1]?.focus();
+  }
+
+  // ⭐⭐ NEW — Handle PASTE event
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasted) return;
+
+    // Auto-fill OTP
+    onChange(pasted);
+
+    // Move focus to last box
+    const lastIndex = pasted.length - 1;
+    inputs.current[lastIndex]?.focus();
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, i: number) {
@@ -37,10 +52,9 @@ function OTPBoxes({
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.input
           key={i}
-          ref={(el) => {
-            inputs.current[i] = el!;
-          }}
+          ref={(el) => (inputs.current[i] = el!)}
           value={chars[i] || ""}
+          onPaste={handlePaste}  // ⭐ NEW
           onChange={(e) =>
             handleChange(i, e.target.value.replace(/[^0-9]/g, "").slice(0, 1))
           }
@@ -56,6 +70,7 @@ function OTPBoxes({
     </div>
   );
 }
+
 
 export default function LoginPage() {
   const router = useRouter();

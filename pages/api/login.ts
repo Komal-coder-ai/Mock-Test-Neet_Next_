@@ -7,28 +7,34 @@ function generateOtp() {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== 'POST')
+    return res.status(405).json({ error: 'Method not allowed' })
 
-  const { phone, aadhar } = req.body || {}
-  if (!phone) return res.status(400).json({ error: 'Phone is required' })
+  const { phone } = req.body || {}
+
+  if (!phone)
+    return res.status(400).json({ error: 'Phone is required' })
+
   const phoneStr = String(phone).replace(/\D/g, '')
-  if (phoneStr.length !== 10) return res.status(400).json({ error: 'Phone must be a 10-digit number' })
+  if (phoneStr.length !== 10)
+    return res.status(400).json({ error: 'Phone must be a 10-digit number' })
 
   try {
     await connectToDatabase()
-    let user = await User.findOne({ phone: phoneStr })
+
+    const user = await User.findOne({ phone: phoneStr })
+
+    // 🚫 If phone number not in DB → Login not allowed
     if (!user) {
-      // create a minimal user if not exists
-      user = await User.create({ name: 'Anonymous', phone: phoneStr, aadhar })
+      return res.status(404).json({ error: 'Invalid user. Please register first.' })
     }
 
-    // generate OTP
+    // Generate OTP for login
     const otp = generateOtp()
     user.otp = otp
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000)
     await user.save()
 
-    // In production send OTP by SMS; for now return otp in response for testing
     return res.status(200).json({ ok: true, otp })
   } catch (err) {
     console.error(err)
