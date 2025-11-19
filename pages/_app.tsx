@@ -20,14 +20,14 @@ function Header() {
 
   return (
     <>
-      {userId && (
+      {(userId && role == "admina")&& (
         <header className="bg-white shadow">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <Link href="/" className="font-bold">
               MockTest
             </Link>
             <nav className="flex items-center gap-4">
-              {role === "admin" && (
+            
                 <Link
                   href="/admin/dashboard"
                   target="_blank"
@@ -36,10 +36,8 @@ function Header() {
                 >
                   Admin Dashboard
                 </Link>
-              )}
-              <Link href="/login" className="text-sm muted">
-                Sign In
-              </Link>
+            
+             
             </nav>
           </div>
         </header>
