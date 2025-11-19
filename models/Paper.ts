@@ -11,6 +11,13 @@ export interface IPaper extends Document {
     options: string[]
     correctIndex: number
   }>
+  // admin metadata
+  icon?: string
+  source?: string
+  official?: boolean
+  exam?: string
+  name?: string
+  questionsCount?: number
   createdAt: Date
 }
 
@@ -27,7 +34,13 @@ const PaperSchema: Schema = new Schema(
         options: { type: [String], required: true },
         correctIndex: { type: Number, required: true }
       }
-    ]
+    ],
+    icon: { type: String },
+    source: { type: String },
+    official: { type: Boolean, default: false },
+    exam: { type: String },
+    name: { type: String },
+    questionsCount: { type: Number }
   },
   { timestamps: true }
 )

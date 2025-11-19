@@ -8,7 +8,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await connectToDatabase()
 
   if (req.method === 'POST') {
-    const { title, category, durationMinutes, totalQuestions, date, adminPhone } = req.body || {}
+    const {
+      exam,
+      name,
+      questionsCount,
+      durationMinutes,
+      date,
+      icon,
+      source,
+      official,
+      adminPhone
+    } = req.body || {}
+
+    // map incoming JSON to internal fields
+    const category = exam === 'NEET' ? 'NEET' : 'JEE'
+    const title = name
+    const totalQuestions = questionsCount
+
     if (!title || !category || !durationMinutes || !totalQuestions) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
@@ -24,7 +40,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const paper = await Paper.create({ title, category, durationMinutes, totalQuestions, date: date ? new Date(date) : undefined, questions: [] })
+      const paper = await Paper.create({
+        title,
+        category,
+        durationMinutes,
+        totalQuestions,
+        date: date ? new Date(date) : undefined,
+        questions: [],
+        icon: icon || undefined,
+        source: source || undefined,
+        official: !!official,
+        exam: exam || undefined,
+        name: name || undefined,
+        questionsCount: questionsCount || undefined
+      })
       return res.status(201).json({ ok: true, paper })
     } catch (err) {
       console.error(err)

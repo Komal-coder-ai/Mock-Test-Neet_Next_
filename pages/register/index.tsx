@@ -58,6 +58,8 @@ export default function RegisterPage() {
           if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
           if (data?.role) localStorage.setItem('userRole', data.role)
           if (data?.id) localStorage.setItem('userId', data.id)
+          // store phone for admin API calls
+          localStorage.setItem('userPhone', phone)
         } catch (e) {
           // ignore storage errors
         }
