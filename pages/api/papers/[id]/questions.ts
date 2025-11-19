@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase } from '../../../../../lib/mongoose'
-import Paper from '../../../../../models/Paper'
-import User from '../../../../../models/User'
+import { connectToDatabase } from './../../../../lib/mongoose'
+import Paper from './../../../../models/Paper'
+import User from './../../../../models/User'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query

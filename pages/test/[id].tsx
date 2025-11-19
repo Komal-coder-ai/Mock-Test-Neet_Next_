@@ -77,7 +77,7 @@ export default function TestDetails() {
             <button className="px-4 py-2 border rounded" onClick={() => router.back()}>Go Back</button>
             <button
               className="px-4 py-2 bg-brand-gradient text-white rounded"
-              onClick={() => router.push(`/test/${id}/begin?phone=${encodeURIComponent(String(phone || ''))}`)}
+              onClick={() => router.push(`/test/${id}/begin`)}
             >
               Start Test Now
             </button>
@@ -87,3 +87,4 @@ export default function TestDetails() {
     </div>
   )
 }
+

@@ -67,7 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const limit = parseInt((req.query.limit as string) || '5', 10)
 
     try {
-      const filter = { category }
+      const catLower = String(category).toLowerCase()
+      const filter = catLower === 'all' ? {} : { category }
       const total = await Paper.countDocuments(filter)
       const papers = await Paper.find(filter)
         .sort({ createdAt: -1 })

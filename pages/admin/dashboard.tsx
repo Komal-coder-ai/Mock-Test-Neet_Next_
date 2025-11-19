@@ -11,12 +11,35 @@ export default function AdminDashboard() {
   const [official, setOfficial] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // Manage Questions state
+  const [papers, setPapers] = useState<any[]>([])
+  const [selectedPaper, setSelectedPaper] = useState<string | null>(null)
+  const [subject, setSubject] = useState<'Physics' | 'Chemistry' | 'Mathematics'>('Physics')
+  const [questionText, setQuestionText] = useState('')
+  const [options, setOptions] = useState(['', '', '', ''])
+  const [correctIndex, setCorrectIndex] = useState<number>(0)
+  const [qMessage, setQMessage] = useState<string | null>(null)
+  const [qError, setQError] = useState<string | null>(null)
 
   useEffect(() => {
     // set default date to today
     const today = new Date().toISOString().slice(0, 10)
     setDate(today)
+    fetchPapers()
   }, [])
+
+  async function fetchPapers() {
+    try {
+      const res = await fetch('/api/papers?category=all&limit=200')
+      const data = await res.json()
+      if (res.ok) {
+        setPapers(data.papers || [])
+        if ((data.papers || []).length > 0) setSelectedPaper((data.papers || [])[0]._id)
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
 
   async function createPaper(e: React.FormEvent) {
     e.preventDefault()
@@ -46,6 +69,49 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       setError('Network error')
+    }
+  }
+
+  async function addQuestion(e: React.FormEvent) {
+    e.preventDefault()
+    setQError(null)
+    setQMessage(null)
+
+    if (!selectedPaper) {
+      setQError('Select a paper first')
+      return
+    }
+
+    if (!questionText || options.some((o) => !o)) {
+      setQError('Question and all options are required')
+      return
+    }
+
+    const adminPhone = typeof window !== 'undefined' ? localStorage.getItem('userPhone') : null
+    if (!adminPhone) {
+      setQError('Admin phone not found in localStorage')
+      return
+    }
+
+    const body = { text: questionText, options, correctIndex, subject, adminPhone }
+
+    try {
+      const res = await fetch(`/api/papers/${selectedPaper}/questions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setQMessage('Question added')
+        setQuestionText('')
+        setOptions(['', '', '', ''])
+        setCorrectIndex(0)
+      } else {
+        setQError(data?.error || 'Failed to add question')
+      }
+    } catch (err) {
+      setQError('Network error')
     }
   }
 
@@ -119,6 +185,64 @@ export default function AdminDashboard() {
 
               <div>
                 <button className="btn-primary px-4 py-2" type="submit">Create Paper</button>
+              </div>
+            </form>
+          </div>
+
+          {/* Manage Questions */}
+          <div className="bg-white rounded shadow p-6 mt-6">
+            <h2 className="text-xl font-bold mb-4">Manage Questions</h2>
+
+            <form onSubmit={addQuestion} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium">Select Paper</label>
+                  <select value={selectedPaper || ''} onChange={(e) => setSelectedPaper(e.target.value)} className="mt-1 block w-full border rounded p-2">
+                    {papers.map((p) => (
+                      <option key={p._id} value={p._id}>{p.title} — {p.exam}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium">Subject</label>
+                  <select value={subject} onChange={(e) => setSubject(e.target.value as any)} className="mt-1 block w-full border rounded p-2">
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium">Question</label>
+                  <textarea value={questionText} onChange={(e) => setQuestionText(e.target.value)} className="mt-1 block w-full border rounded p-2" />
+                </div>
+
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i}>
+                    <label className="block text-sm font-medium">Option {i + 1}</label>
+                    <input value={options[i]} onChange={(e) => setOptions((prev) => { const copy = [...prev]; copy[i] = e.target.value; return copy })} className="mt-1 block w-full border rounded p-2" />
+                  </div>
+                ))}
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium">Correct Option</label>
+                  <div className="flex gap-4 mt-2">
+                    {[0, 1, 2, 3].map((i) => (
+                      <label key={i} className="inline-flex items-center gap-2">
+                        <input type="radio" name="correct" checked={correctIndex === i} onChange={() => setCorrectIndex(i)} />
+                        <span>Option {i + 1}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {qMessage && <div className="text-green-600">{qMessage}</div>}
+              {qError && <div className="text-red-600">{qError}</div>}
+
+              <div>
+                <button className="btn-primary px-4 py-2" type="submit">Add Question</button>
               </div>
             </form>
           </div>

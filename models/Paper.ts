@@ -32,7 +32,8 @@ const PaperSchema: Schema = new Schema(
       {
         text: { type: String, required: true },
         options: { type: [String], required: true },
-        correctIndex: { type: Number, required: true }
+        correctIndex: { type: Number, required: true },
+        subject: { type: String }
       }
     ],
     icon: { type: String },
