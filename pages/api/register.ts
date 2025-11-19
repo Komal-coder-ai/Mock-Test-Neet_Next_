@@ -13,14 +13,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { name, phone, aadhar, type } = req.body || {}
   if (!name || !phone) return res.status(400).json({ error: 'Name and phone are required' })
+  const phoneStr = String(phone).replace(/\D/g, '')
+  if (phoneStr.length !== 10) return res.status(400).json({ error: 'Phone must be a 10-digit number' })
 
   try {
     await connectToDatabase()
 
-    let user = await User.findOne({ phone })
+    let user = await User.findOne({ phone: phoneStr })
     if (!user) {
       const role = type === 'admin' ? 'admin' : 'user'
-      user = await User.create({ name, phone, aadhar, role })
+      user = await User.create({ name, phone: phoneStr, aadhar, role })
     } else {
       // update aadhar/name if provided
       if (aadhar) user.aadhar = aadhar

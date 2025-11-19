@@ -11,13 +11,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { phone, aadhar } = req.body || {}
   if (!phone) return res.status(400).json({ error: 'Phone is required' })
+  const phoneStr = String(phone).replace(/\D/g, '')
+  if (phoneStr.length !== 10) return res.status(400).json({ error: 'Phone must be a 10-digit number' })
 
   try {
     await connectToDatabase()
-    let user = await User.findOne({ phone })
+    let user = await User.findOne({ phone: phoneStr })
     if (!user) {
-      // create a minimal user if not exists (as requested: "that data base for now any thing")
-      user = await User.create({ name: 'Anonymous', phone, aadhar })
+      // create a minimal user if not exists
+      user = await User.create({ name: 'Anonymous', phone: phoneStr, aadhar })
     }
 
     // generate OTP

@@ -1,126 +1,85 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
+import { Formik, Form, Field } from 'formik'
+import ErrorMsg from '../../components/ErrorMsg'
+import Toast from '../../components/Toast'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [otp, setOtp] = useState('')
-  const [step, setStep] = useState<'form' | 'verify'>('form')
-  const [message, setMessage] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  async function submitForm(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    if (!name || !phone) {
-      setError('Name and phone are required')
-      return
-    }
-    try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone })
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setMessage('OTP sent (see response for testing)')
-        if (data?.otp) setMessage((m) => `${m} — OTP: ${data.otp}`)
-        setStep('verify')
-      } else {
-        setError(data?.error || 'Registration failed')
-      }
-    } catch (err) {
-      setError('Network error')
-    }
-  }
-
-  async function verifyOtp(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    if (!phone || !otp) {
-      setError('Phone and OTP are required')
-      return
-    }
-    try {
-      const res = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp })
-      })
-      const data = await res.json()
-      if (res.ok) {
-        // store tokens locally
-        try {
-          if (data?.accessToken) localStorage.setItem('accessToken', data.accessToken)
-          if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
-          if (data?.role) localStorage.setItem('userRole', data.role)
-          if (data?.id) localStorage.setItem('userId', data.id)
-          // store phone for admin API calls
-          localStorage.setItem('userPhone', phone)
-        } catch (e) {
-          // ignore storage errors
-        }
-
-        // if admin go to dashboard, else to Aadhar
-        if (data?.role === 'admin') {
-          router.push('/dashboard')
-        } else {
-          router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
-        }
-      } else {
-        setError(data?.error || 'OTP verification failed')
-      }
-    } catch (err) {
-      setError('Network error')
-    }
-  }
+  const [toast, setToast] = useState<{ msg: string; type?: 'success' | 'error' } | null>(null)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md p-8 bg-white rounded shadow">
-        <h2 className="text-2xl font-bold">Register</h2>
-        <p className="muted mt-2">Create an account with phone and optional Aadhar. We'll send an OTP to verify.</p>
-
-        {step === 'form' && (
-          <form onSubmit={submitForm} className="mt-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Name</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Phone</label>
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            {/* Aadhar will be collected after OTP verification on the Aadhar page */}
-            {message && <p className="text-sm text-green-600">{message}</p>}
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <div>
-              <button className="w-full btn-primary" type="submit">Register & Send OTP</button>
-            </div>
-          </form>
-        )}
-
-        {step === 'verify' && (
-          <form onSubmit={verifyOtp} className="mt-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Phone</label>
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">OTP</label>
-              <input value={otp} onChange={(e) => setOtp(e.target.value)} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            {message && <p className="text-sm text-green-600">{message}</p>}
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <div>
-              <button className="w-full btn-primary" type="submit">Verify & Continue</button>
-            </div>
-          </form>
-        )}
+    <div className="min-h-screen md:flex">
+      <motion.div className="md:w-1/2 hero-left hero-overlay p-10 items-center justify-center hidden md:flex">
+        <div className="max-w-md">
+          <h1 className="hero-title font-extrabold">Build confidence with real mock tests</h1>
+          <p className="mt-4 muted">Register and get started with realistic JEE & NEET mock tests, analytics and learning paths.</p>
+          <div className="mt-6">
+            <p className="text-sm muted">Have an account? <a href="/login" className="text-accent font-medium">Login</a></p>
+          </div>
+        </div>
       </motion.div>
+
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md form-card p-8">
+          <h2 className="text-2xl font-bold">Register</h2>
+          <p className="muted mt-2">Create an account with phone. We'll send an OTP to verify.</p>
+
+          <Formik
+            initialValues={{ name: '', phone: '' }}
+            validate={(vals: any) => {
+              const errors: any = {}
+              if (!vals.name) errors.name = 'Name is required'
+              if (!vals.phone) errors.phone = 'Phone is required'
+              else if (!/^[0-9]{10}$/.test(vals.phone)) errors.phone = 'Enter a valid 10-digit phone number'
+              return errors
+            }}
+            onSubmit={async (values: any, { setSubmitting }: any) => {
+              setSubmitting(true)
+              try {
+                const res = await fetch('/api/register', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name: values.name, phone: values.phone })
+                })
+                const data = await res.json()
+                if (res.ok) {
+                  setToast({ msg: 'Registered — OTP sent (check response in dev).' , type: 'success'})
+                  // brief delay then navigate to login
+                  setTimeout(() => router.push('/login'), 1200)
+                } else {
+                  setToast({ msg: data?.error || 'Registration failed', type: 'error' })
+                }
+              } catch (err) {
+                setToast({ msg: 'Network error', type: 'error' })
+              } finally {
+                setSubmitting(false)
+              }
+            }}
+          >
+            {({ errors, touched, isSubmitting }: any) => (
+              <Form className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium">Name</label>
+                  <Field name="name" className="mt-1 block w-full border rounded p-3" />
+                  {touched.name && <ErrorMsg>{errors.name}</ErrorMsg>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Phone</label>
+                  <Field name="phone" className="mt-1 block w-full border rounded p-3" />
+                  {touched.phone && <ErrorMsg>{errors.phone}</ErrorMsg>}
+                </div>
+                <div>
+                  <button className="w-full btn-primary py-3" type="submit" disabled={isSubmitting}>Register & Send OTP</button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+
+          <Toast message={toast?.msg || null} type={toast?.type === 'error' ? 'error' : 'success'} onClose={() => setToast(null)} />
+        </motion.div>
+      </div>
     </div>
   )
 }
