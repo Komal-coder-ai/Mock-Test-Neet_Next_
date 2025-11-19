@@ -11,12 +11,12 @@ body {
 }
 
 :root {
-  /* Government exam palette: deep navy -> teal accent */
-  --brand-start: #0b3d91; /* deep navy */
-  --brand-end:   #0ea5a4; /* teal-ish accent */
-  --accent:      #0b61b7; /* brighter blue accent */
-  --muted:       #475569; /* slate-600 for muted text */
-  --danger:      #b91c1c; /* red for errors */
+  /* Professional education palette: deep indigo -> vibrant blue */
+  --brand-start: #1e3a8a; /* deep indigo-blue */
+  --brand-end:   #3b82f6; /* bright blue */
+  --accent:      #2563eb; /* vivid blue accent */
+  --muted:       #64748b; /* slate-500 for muted text */
+  --danger:      #dc2626; /* red for errors */
 }
 
 /* Re-usable utility-like classes that use CSS variables */
@@ -46,7 +46,7 @@ body {
 
 /* Hero left cover styles */
 .hero-left {
-  background-image: linear-gradient(120deg, var(--brand-start), rgba(6,42,42,0.85) 50%, var(--brand-end));
+  background-image: linear-gradient(120deg, var(--brand-start), rgba(30,58,138,0.85) 50%, var(--brand-end));
   color: white;
 }
 
@@ -72,7 +72,7 @@ body {
 
 /* Error message style with left accent border */
 .error-left {
-  background: #fff7f7;
+  background: #fef2f2;
   border-left: 4px solid var(--danger);
   padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
@@ -80,8 +80,6 @@ body {
 }
 
 /* Toast variants using palette */
-.toast-info { background: white; border: 1px solid #e6eefb; color: #0b3d91 }
-.toast-success { background: #ecfdf5; border: 1px solid #bbf7d0; color: #065f46 }
-.toast-error { background: #fff1f2; border: 1px solid #fecaca; color: var(--danger) }
-
-
+.toast-info { background: white; border: 1px solid #dbeafe; color: #1e3a8a }
+.toast-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534 }
+.toast-error { background: #fef2f2; border: 1px solid #fecaca; color: var(--danger) }

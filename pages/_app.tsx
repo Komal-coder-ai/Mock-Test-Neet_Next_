@@ -1,33 +1,51 @@
-import type { AppProps } from 'next/app'
-import '../styles/globals.css'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import type { AppProps } from "next/app";
+import "../styles/globals.css";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 function Header() {
-  const [role, setRole] = useState<string | null>(null)
+  const [role, setRole] = useState<string | null>(null);
+  const [userId, setuserId] = useState<string | null>(null);
 
   useEffect(() => {
     try {
-      const r = localStorage.getItem('userRole')
-      setRole(r)
+      const r = localStorage.getItem("userRole");
+      const userId = localStorage.getItem("userId");
+      setRole(r);
+      setuserId(userId);
     } catch (e) {
-      setRole(null)
+      setRole(null);
     }
-  }, [])
+  }, []);
 
   return (
-    <header className="bg-white shadow">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-bold">MockTest</Link>
-        <nav className="flex items-center gap-4">
-          {role === 'admin' && (
-            <Link href="/admin/dashboard" target="_blank" rel="noopener noreferrer" className="text-sm text-green-700">Admin Dashboard</Link>
-          )}
-          <Link href="/login" className="text-sm muted">Sign In</Link>
-        </nav>
-      </div>
-    </header>
-  )
+    <>
+      {userId && (
+        <header className="bg-white shadow">
+          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Link href="/" className="font-bold">
+              MockTest
+            </Link>
+            <nav className="flex items-center gap-4">
+              {role === "admin" && (
+                <Link
+                  href="/admin/dashboard"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-green-700"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+              <Link href="/login" className="text-sm muted">
+                Sign In
+              </Link>
+            </nav>
+          </div>
+        </header>
+      )}
+    </>
+  );
 }
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -36,5 +54,5 @@ export default function App({ Component, pageProps }: AppProps) {
       <Header />
       <Component {...pageProps} />
     </>
-  )
+  );
 }
