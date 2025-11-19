@@ -52,8 +52,22 @@ export default function RegisterPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        // after registration verify, go to Aadhar entry screen for extra details
-        router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
+        // store tokens locally
+        try {
+          if (data?.accessToken) localStorage.setItem('accessToken', data.accessToken)
+          if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+          if (data?.role) localStorage.setItem('userRole', data.role)
+          if (data?.id) localStorage.setItem('userId', data.id)
+        } catch (e) {
+          // ignore storage errors
+        }
+
+        // if admin go to dashboard, else to Aadhar
+        if (data?.role === 'admin') {
+          router.push('/dashboard')
+        } else {
+          router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
+        }
       } else {
         setError(data?.error || 'OTP verification failed')
       }

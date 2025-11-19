@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from '../../lib/mongoose'
 import User from '../../models/User'
+import jwt from 'jsonwebtoken'
+
+function getSecret(name: string, fallback: string) {
+  return process.env[name] || fallback
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -22,7 +27,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     user.otpExpires = undefined
     await user.save()
 
-    return res.status(200).json({ ok: true })
+    // generate tokens
+    const jwtSecret = getSecret('JWT_SECRET', 'dev_secret_change_me')
+    const jwtRefreshSecret = getSecret('JWT_REFRESH_SECRET', 'dev_refresh_secret_change_me')
+
+    const payload = { id: user._id.toString(), phone: user.phone, role: user.role || 'user' }
+    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '15m' })
+    const refreshToken = jwt.sign({ id: user._id.toString() }, jwtRefreshSecret, { expiresIn: '7d' })
+
+    return res.status(200).json({ ok: true, accessToken, refreshToken, id: user._id, role: user.role || 'user' })
   } catch (err) {
     console.error(err)
     return res.status(500).json({ error: 'Server error' })

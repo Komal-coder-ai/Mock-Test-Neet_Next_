@@ -53,8 +53,19 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        // after successful verify, navigate to Aadhar entry screen and pass phone
-        router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
+        // store tokens locally
+        try {
+          if (data?.accessToken) localStorage.setItem('accessToken', data.accessToken)
+          if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+          if (data?.role) localStorage.setItem('userRole', data.role)
+          if (data?.id) localStorage.setItem('userId', data.id)
+        } catch (e) {}
+
+        if (data?.role === 'admin') {
+          router.push('/dashboard')
+        } else {
+          router.push(`/adhar?phone=${encodeURIComponent(phone)}`)
+        }
       } else {
         setError(data?.error || 'OTP verification failed')
       }
