@@ -7,35 +7,37 @@ let MONGODB_URI = process.env.MONGODB_URI
 function stripQuotes(s: string) {
   return s.replace(/^\s*["']?/, '').replace(/["']?\s*$/, '')
 }
-
+// If MONGODB_URI is not set in env, try to load from .env.local (dev helper)
 if (!MONGODB_URI) {
-  // Try to load from .env.local as a fallback (useful in some dev setups)
   try {
-    const envPath = path.join(process.cwd(), '.env.local')
-    if (fs.existsSync(envPath)) {
+    const envFiles = ['.env.local', '.local.env']
+    for (const fname of envFiles) {
+      const envPath = path.join(process.cwd(), fname)
+      if (!fs.existsSync(envPath)) continue
       const content = fs.readFileSync(envPath, 'utf8')
       const match = content.split(/\r?\n/).find((l) => l.trim().startsWith('MONGODB_URI='))
       if (match) {
         const [, val] = match.split(/=/)
-        if (val !== undefined) MONGODB_URI = stripQuotes(val)
+        if (val !== undefined) {
+          MONGODB_URI = stripQuotes(val)
+          break
+        }
       }
     }
   } catch (e) {
-    // ignore and let the later check throw a helpful error
+    // ignore; we'll surface an error when trying to connect
   }
 }
 
-console.log(MONGODB_URI ?? 'undefined', 'MONGODB_URI12')
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable in .env.local')
-}
-
 let cached: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } = (global as any)._mongoose || { conn: null, promise: null }
-
 if (!cached) (global as any)._mongoose = cached
 
 export async function connectToDatabase() {
+  if (!MONGODB_URI) {
+    console.error('MONGODB_URI is not defined. Please set MONGODB_URI in .env.local or process.env')
+    throw new Error('Please define the MONGODB_URI environment variable in .env.local')
+  }
+
   if (cached.conn) return cached.conn
 
   if (!cached.promise) {

@@ -47,6 +47,10 @@ export default function TestRunner() {
   const [remaining, setRemaining] = useState<number>(0)
   const timerRef = useRef<number | null>(null)
 
+  // submit modal state
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
   useEffect(() => {
     if (!id) return
     setLoading(true)
@@ -448,10 +452,83 @@ export default function TestRunner() {
                 className="w-full mt-6 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-colors flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => setShowSubmitModal(true)}
               >
                 <CheckCircle2 size={18} />
                 Submit Test
               </motion.button>
+
+              {/* Submit Confirmation Modal */}
+              <AnimatePresence>
+                {showSubmitModal && (
+                  <motion.div className="fixed inset-0 z-50 flex items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setShowSubmitModal(false)} />
+                    <motion.div className="bg-white rounded-2xl p-8 w-[720px] max-w-full z-10 shadow-2xl" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: 20 }}>
+                      <h3 className="text-2xl font-bold mb-6">Submit Test?</h3>
+
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="p-4 rounded-lg bg-green-50 flex flex-col items-start">
+                          <div className="text-3xl font-bold text-green-600">{answeredCount}</div>
+                          <div className="text-sm text-green-700">Answered</div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-gray-50 flex flex-col items-start">
+                          <div className="text-3xl font-bold text-gray-700">{total - answeredCount}</div>
+                          <div className="text-sm text-gray-700">Not Answered</div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-yellow-50 flex flex-col items-start">
+                          <div className="text-3xl font-bold text-yellow-700">{Object.keys(marked).filter((k) => marked[Number(k)]).length}</div>
+                          <div className="text-sm text-yellow-700">Marked</div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-blue-50 flex flex-col items-start">
+                          <div className="text-3xl font-bold text-blue-700">{Math.round((answeredCount / Math.max(1, total)) * 100)}%</div>
+                          <div className="text-sm text-blue-700">Progress</div>
+                        </div>
+                      </div>
+
+                      <p className="text-center text-gray-600 mb-6">Are you sure you want to submit the test? This action cannot be undone.</p>
+
+                      <div className="flex items-center justify-center gap-4">
+                        <button className="px-6 py-2 rounded-full border" onClick={() => setShowSubmitModal(false)}>Continue Test</button>
+                        <button disabled={submitting} className="px-6 py-2 rounded-full bg-blue-600 text-white" onClick={async () => {
+                          if (submitting) return
+                          setSubmitting(true)
+                          try {
+                            const answersMap: Record<string, number> = {}
+                            for (let i = 0; i < questions.length; i++) {
+                              const q = questions[i] as any
+                              const qid = q && (q as any)._id ? String((q as any)._id) : String(i)
+                              if (selectedAnswers[i] !== undefined) answersMap[qid] = selectedAnswers[i]
+                            }
+                            const resp = await fetch(`/api/papers/${String(id)}/submit`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ answers: answersMap })
+                            })
+                            const data = await resp.json()
+                            if (resp.ok && data?.ok) {
+                              try {
+                                const payload = { result: data.result, answers: answersMap, paperId: String(id), timestamp: Date.now() }
+                                localStorage.setItem(`lastSubmission_${String(id)}`, JSON.stringify(payload))
+                              } catch (e) {
+                                console.warn('Failed to save submission locally', e)
+                              }
+                              setShowSubmitModal(false)
+                              router.push(`/test/${String(id)}/result`)
+                            } else {
+                              alert(data?.error || 'Failed to submit')
+                            }
+                          } catch (e) {
+                            console.error(e)
+                            alert('Network error')
+                          } finally {
+                            setSubmitting(false)
+                          }
+                        }}>{submitting ? 'Submitting...' : 'Submit Test'}</button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </aside>
         </div>
