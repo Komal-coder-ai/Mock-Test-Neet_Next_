@@ -51,6 +51,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const result = { total, answeredCount, correctCount, wrongCount, percent, perQuestion, subjectBreakdown: subjectMap }
 
+    // optional persistence: if client provided save=true and userPhone, persist to Results
+    try {
+      const { save, userPhone, paperTitle } = req.body || {}
+      if (save && userPhone) {
+        const Result = (await import('../../../../models/Result')).default
+        const doc = await Result.create({
+          userPhone: String(userPhone),
+          paperId: String(id),
+          paperTitle: paperTitle || (paper && paper.title) || '',
+          total,
+          answeredCount,
+          correctCount,
+          wrongCount,
+          percent,
+          perQuestion,
+          subjectBreakdown: subjectMap,
+          answers
+        })
+        return res.status(200).json({ ok: true, result, saved: true, id: String(doc._id) })
+      }
+    } catch (err) {
+      console.error('Failed to save result:', err)
+      // continue and return result even if save failed
+    }
+
     return res.status(200).json({ ok: true, result })
   } catch (err) {
     console.error(err)

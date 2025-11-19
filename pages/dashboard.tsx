@@ -115,6 +115,7 @@ export default function Dashboard() {
               <motion.a 
                 className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 cursor-pointer transition-colors"
                 whileHover={{ scale: 1.05 }}
+                onClick={() => router.push(`/test/history?phone=${encodeURIComponent(phone)}`)}
               >
                 <Activity size={16} />
                 Test History
