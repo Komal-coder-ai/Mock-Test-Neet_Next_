@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await connectToDatabase()
 
   if (req.method === 'POST') {
-    const { text, options, correctIndex, adminPhone } = req.body || {}
+    const { text, options, correctIndex, adminPhone, subject } = req.body || {}
     if (!text || !Array.isArray(options) || typeof correctIndex !== 'number') return res.status(400).json({ ok: false, error: 'Missing question fields' })
     if (!adminPhone) return res.status(403).json({ ok: false, error: 'adminPhone required' })
 
@@ -22,10 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!paper) return res.status(404).json({ ok: false, error: 'Paper not found' })
 
       paper.questions = paper.questions || []
-      paper.questions.push({ text, options, correctIndex })
+      const q: any = { text, options, correctIndex }
+      if (subject) q.subject = String(subject)
+      paper.questions.push(q)
       await paper.save()
 
-      return res.status(201).json({ ok: true, question: { text, options, correctIndex } })
+      return res.status(201).json({ ok: true, question: q })
     } catch (err) {
       console.error(err)
       return res.status(500).json({ ok: false, error: 'Server error' })
