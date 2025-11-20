@@ -44,10 +44,7 @@ export default function TestDetails() {
                   : ""}
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-sm muted">Status</div>
-              <div className="font-semibold text-green-600">Ready</div>
-            </div>
+           
           </div>
 
           <hr className="my-6" />

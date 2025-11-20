@@ -81,26 +81,7 @@ export default function Dashboard() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  const stats = [
-    {
-      icon: FileText,
-      label: "Total Papers",
-      value: total,
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      icon: Clock,
-      label: "Avg Duration",
-      value: "180 min",
-      color: "from-emerald-500 to-emerald-600",
-    },
-    {
-      icon: Target,
-      label: "Completion",
-      value: "0%",
-      color: "from-purple-500 to-purple-600",
-    },
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -127,39 +108,7 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={idx}
-                className="bg-white rounded-lg p-6 border border-gray-200 hover:border-gray-300 transition-all"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium">
-                      {stat.label}
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">
-                      {stat.value}
-                    </p>
-                  </div>
-                  <div
-                    className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}
-                  >
-                    <Icon size={24} className="text-white" />
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
+      
         {/* Category Tabs */}
         <motion.div
           className="flex gap-3 mb-8"
