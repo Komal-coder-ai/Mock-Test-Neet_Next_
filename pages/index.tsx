@@ -29,7 +29,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={`min-h-screen flex items-center justify-center py-12 px-4 ${COLORS.secondary}`}>
+    <div className={`min-h-screen flex items-center justify-center py-12 px-4 `}>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
