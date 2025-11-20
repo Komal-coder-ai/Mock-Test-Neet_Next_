@@ -458,7 +458,7 @@ export default function LoginPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-sm muted">
+            {/* <p className="text-sm muted">
               Don't have an account?{" "}
               <Link
                 href="/register"
@@ -466,7 +466,7 @@ export default function LoginPage() {
               >
                 Register Now
               </Link>
-            </p>
+            </p> */}
             <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs sm:text-sm text-gray-600">
                 🔒 Your data is encrypted and secure. By signing in, you agree
