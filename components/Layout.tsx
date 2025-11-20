@@ -40,7 +40,14 @@ const Navbar = ({ user }: { user?: any }) => {
           </button>
           <button
             className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-none cursor-pointer"
-           
+            onClick={() => {
+              const userId = localStorage.getItem("userId") || localStorage.getItem("user");
+              if (userId) {
+                router.push("/profile");
+              } else {
+                alert("Please login or verify OTP to access your profile.");
+              }
+            }}
           >
             <User size={16} />
             Profile

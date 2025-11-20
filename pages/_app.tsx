@@ -64,11 +64,8 @@ function Header() {
               </a>
               <a
                 onClick={() => {
-                  // profile/adhar
-                  if (userPhone)
-                    router.push(
-                      `/adhar?phone=${encodeURIComponent(userPhone)}`
-                    );
+                  if (userId)
+                    router.push("/profile");
                   else router.push("/login");
                 }}
                 className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
