@@ -123,14 +123,7 @@ export default function Dashboard() {
                 Select your exam and begin your test preparation
               </p>
             </div>
-            <motion.button
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Search size={18} className="text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Filter</span>
-            </motion.button>
+           
           </div>
         </motion.div>
 

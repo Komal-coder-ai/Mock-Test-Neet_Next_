@@ -32,6 +32,8 @@ type Paper = {
 
 export default function TestRunner() {
     const [remaining, setRemaining] = useState<number>(0)
+    const router = useRouter()
+    const { id, phone } = router.query
     useEffect(() => {
       if (remaining === 0 && !submitting && !showSubmitModal) {
         (async () => {
@@ -74,7 +76,7 @@ export default function TestRunner() {
               } catch (e) {
                 console.warn('Failed to save submission locally', e);
               }
-              router.push(`/test/${String(id)}/result`);
+              // router.push(`/test/${String(id)}/result`);
             } else {
               alert(data?.error || 'Failed to submit');
             }
@@ -87,10 +89,13 @@ export default function TestRunner() {
         })();
       }
     }, [remaining]);
-  const router = useRouter()
-  const { id, phone } = router.query
   const [paper, setPaper] = useState<Paper | null>(null)
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (id) {
+      localStorage.removeItem(`lastSubmission_${String(id)}`)
+    }
+  }, [id])
 
   // test state
   const [currentIndex, setCurrentIndex] = useState(0)

@@ -131,12 +131,15 @@ export default function ResultPage() {
             Review Answers
             <ArrowRight size={18} />
           </button>
-          <button
-            className="w-full md:w-auto px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold flex items-center justify-center gap-2 shadow"
-            onClick={() => router.push(`/test/${String(id)}`)}
-          >
-            Try Again
-          </button>
+            <button
+              className="w-full md:w-auto px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold flex items-center justify-center gap-2 shadow"
+              onClick={() => {
+                localStorage.removeItem(`lastSubmission_${String(id)}`);
+                router.push(`/test/${String(id)}`);
+              }}
+            >
+              Try Again
+            </button>
         </div>
       </div>
     </div>
