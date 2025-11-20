@@ -43,7 +43,7 @@ const Navbar = ({ user }: { user?: any }) => {
           </div>
           <div>
             <div className={`font-extrabold text-xl ${COLORS.navText}`}>
-              MockTest Pro
+              HPBOSE
             </div>
             <div
               className={`text-xs ${COLORS.navAccent} font-semibold tracking-wide`}
@@ -134,9 +134,9 @@ const Footer = () => (
   <footer className="mt-16 py-8 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
     <div className="max-w-7xl mx-auto px-6 text-center text-sm text-gray-700">
       <div className="mb-2 font-semibold text-blue-700">
-        MockTest Pro - NEET & JEE Preparation
+        HPBOSE - NEET & JEE Preparation
       </div>
-      <p className="mb-2">© 2024 MockTest Pro. All rights reserved.</p>
+      <p className="mb-2">© 2024 HPBOSE. All rights reserved.</p>
       <div className="mb-2 flex justify-center gap-6 text-xs text-gray-600">
         <span>
           Contact:{" "}
