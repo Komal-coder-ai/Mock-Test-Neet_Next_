@@ -68,10 +68,26 @@ function Header() {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    const id = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+    setUserId(id);
+  }, []);
+
+
+  const Layout = require('../components/Layout').default;
+
   return (
     <>
-      <Header />
-      <Component {...pageProps} />
+      {/* Optionally keep Header for non-userId pages */}
+      {!userId && <Header />}
+      {userId ? (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      ) : (
+        <Component {...pageProps} />
+      )}
     </>
   );
 }
