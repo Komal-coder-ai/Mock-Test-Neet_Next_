@@ -15,22 +15,15 @@ const COLORS = {
 
 const Navbar = ({ user }: { user?: any }) => {
   console.log(user, "useruser");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    // Check multiple authentication indicators
-    const token = localStorage.getItem("accessToken");
-    const phone = localStorage.getItem("userPhone");
-    const userId = localStorage.getItem("userId");
-    
-    // User is logged in if any of these exist
-    const loggedIn = !!(token || phone || userId);
-    setIsLoggedIn(loggedIn);
-    console.log("User logged in status:", loggedIn);
-  }, []);
-
   const router = useRouter();
+  
+
+  const isAuthPage = router.pathname === '/'||router.pathname === '/login' || router.pathname === '/register' || router.pathname === '/login/index' || router.pathname === '/register/index';
+  
+
+  const isHomePage = router.pathname === '/';
   return (
     <nav className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} relative`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -60,7 +53,7 @@ const Navbar = ({ user }: { user?: any }) => {
         </div>
 
         {/* Desktop Navigation */}
-        {isLoggedIn ? (
+        {!isAuthPage ? (
           <div className="hidden md:flex items-center gap-4 lg:gap-8">
             <button
               className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
@@ -105,20 +98,30 @@ const Navbar = ({ user }: { user?: any }) => {
               <ScrollText size={18} />
               <span className="hidden lg:inline">Terms</span>
             </Link>
+            
+            {/* Show Login button on home page */}
+            {isHomePage && (
+              <button
+                className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+                onClick={() => {
+                  router.push(`/login`);
+                }}
+              >
+                <LogIn size={18} />
+                <span className="hidden lg:inline">Login</span>
+              </button>
+            )}
           </div>
         ) : (
-          <>
-            <button
-              className={`hidden md:flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
-              onClick={() => {
-                const phone = localStorage.getItem("userPhone") || "";
-                router.push(`/login`);
-              }}
-            >
-              <LogIn size={18} />
-              <span className="hidden lg:inline">Login</span>
-            </button>
-          </>
+          <button
+            className={`hidden md:flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+            onClick={() => {
+              router.push(`/login`);
+            }}
+          >
+            <LogIn size={18} />
+            <span className="hidden lg:inline">Login</span>
+          </button>
         )}
 
         {/* Mobile Menu Button */}
@@ -161,7 +164,7 @@ const Navbar = ({ user }: { user?: any }) => {
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-gradient-to-r from-blue-700 to-indigo-700 border-t border-indigo-600 shadow-lg z-50">
           <div className="px-4 py-3 space-y-2">
-            {isLoggedIn ? (
+            {!isAuthPage ? (
               <>
                 <button
                   className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
@@ -209,6 +212,20 @@ const Navbar = ({ user }: { user?: any }) => {
                   <ScrollText size={18} />
                   Terms
                 </Link>
+                
+                {/* Show Login button on home page in mobile menu */}
+                {isHomePage && (
+                  <button
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                    onClick={() => {
+                      router.push(`/login`);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogIn size={18} />
+                    Login
+                  </button>
+                )}
               </>
             ) : (
               <button

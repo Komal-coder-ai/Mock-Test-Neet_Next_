@@ -445,15 +445,6 @@ export default function LoginPage() {
                       >
                         ← Back
                       </motion.button>
-                      <motion.button
-                        type="button"
-                        className="flex-1 border-2 border-blue-500 text-blue-600 rounded-lg py-2.5 font-medium hover:bg-blue-50 transition-all text-sm sm:text-base"
-                        onClick={() => setStep("request")}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        🔄 Resend
-                      </motion.button>
                     </div>
                   </motion.div>
                 )}
