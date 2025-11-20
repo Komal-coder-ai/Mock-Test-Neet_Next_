@@ -81,9 +81,7 @@ export default function Dashboard() {
   const stats = [
     { icon: FileText, label: 'Total Papers', value: total, color: 'from-blue-500 to-blue-600' },
     { icon: Clock, label: 'Avg Duration', value: '180 min', color: 'from-emerald-500 to-emerald-600' },
-    { icon: Target, label: 'Completion', value: '0%', color: 'from-purple-500 to-purple-600' },
-    { icon: Trophy, label: 'Best Score', value: '--', color: 'from-amber-500 to-amber-600' },
-  ]
+      ]
 
   return (
     <div className="min-h-screen bg-gray-50">

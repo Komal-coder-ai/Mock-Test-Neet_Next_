@@ -31,6 +31,62 @@ type Paper = {
 }
 
 export default function TestRunner() {
+    const [remaining, setRemaining] = useState<number>(0)
+    useEffect(() => {
+      if (remaining === 0 && !submitting && !showSubmitModal) {
+        (async () => {
+          setSubmitting(true);
+          try {
+            const answersMap: Record<string, number> = {};
+            for (let i = 0; i < questions.length; i++) {
+              const q = questions[i] as any;
+              const qid = q && (q as any)._id ? String((q as any)._id) : String(i);
+              if (selectedAnswers[i] !== undefined) answersMap[qid] = selectedAnswers[i];
+            }
+            let userPhone: string | null = null;
+            try {
+              if (phone && typeof phone === 'string') userPhone = phone;
+              else {
+                const stored = localStorage.getItem('userPhone') || localStorage.getItem('user');
+                if (stored) {
+                  try { const parsed = JSON.parse(stored); userPhone = parsed?.phone || parsed?.userPhone || String(parsed) } catch { userPhone = String(stored) }
+                }
+              }
+            } catch (e) {
+              console.warn('Error reading user phone from storage', e);
+            }
+            const resp = await fetch(`/api/papers/${String(id)}/submit`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                answers: answersMap,
+                answersByIndex: selectedAnswers,
+                save: !!userPhone,
+                userPhone: userPhone || undefined,
+                paperTitle: paper?.title || undefined
+              })
+            });
+            const data = await resp.json();
+            if (resp.ok && data?.ok) {
+              try {
+                const payload = { result: data.result, answers: answersMap, paperId: String(id), timestamp: Date.now() };
+                localStorage.setItem(`lastSubmission_${String(id)}`, JSON.stringify(payload));
+              } catch (e) {
+                console.warn('Failed to save submission locally', e);
+              }
+              router.push(`/test/${String(id)}/result`);
+            } else {
+              alert(data?.error || 'Failed to submit');
+            }
+          } catch (e) {
+            console.error(e);
+            alert('Network error');
+          } finally {
+            setSubmitting(false);
+          }
+        })();
+      }
+    }, [remaining]);
   const router = useRouter()
   const { id, phone } = router.query
   const [paper, setPaper] = useState<Paper | null>(null)
@@ -44,7 +100,7 @@ export default function TestRunner() {
   const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({})
 
   // timer
-  const [remaining, setRemaining] = useState<number>(0)
+ 
   const timerRef = useRef<number | null>(null)
 
   // submit modal state
