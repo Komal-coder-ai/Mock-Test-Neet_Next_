@@ -148,6 +148,14 @@ export default function TestRunner() {
     setSelectedAnswers((prev) => ({ ...prev, [qIdx]: optIdx }))
   }
 
+  function clearResponse(qIdx: number) {
+    setSelectedAnswers((prev) => {
+      const copy = { ...prev }
+      if (copy[qIdx] !== undefined) delete copy[qIdx]
+      return copy
+    })
+  }
+
   function toggleMark(qIdx: number) {
     setMarked((prev) => ({ ...prev, [qIdx]: !prev[qIdx] }))
   }
@@ -354,6 +362,19 @@ export default function TestRunner() {
                       <ChevronLeft size={18} />
                       Previous
                     </motion.button>
+                    <motion.button
+                      onClick={() => clearResponse(currentIndex)}
+                      disabled={!selectedAnswers[currentIndex] && selectedAnswers[currentIndex] !== 0}
+                      title="Clear selected response"
+                      className={`flex items-center gap-2 px-4 py-2 border rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors ${
+                        !selectedAnswers[currentIndex] && selectedAnswers[currentIndex] !== 0 ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Clear
+                    </motion.button>
+
                     <motion.button
                       onClick={nextQuestion}
                       className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-colors"
