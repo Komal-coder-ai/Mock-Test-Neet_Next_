@@ -263,35 +263,7 @@ const Footer = () => (
         HPBOSE - NEET & JEE Preparation
       </div>
       <p className="mb-3 sm:mb-4 text-xs sm:text-sm">© 2024 HPBOSE. All rights reserved.</p>
-      <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-gray-600">
-        <span className="flex items-center justify-center gap-1">
-          <span className="font-medium">Contact:</span>
-          <a
-            href="mailto:support@mocktestpro.com"
-            className="text-blue-600 hover:underline break-all"
-          >
-            support@mocktestpro.com
-          </a>
-        </span>
-        <span className="flex items-center justify-center gap-1">
-          <span className="font-medium">WhatsApp:</span>
-          <a
-            href="https://wa.me/919876543210"
-            className="text-blue-600 hover:underline"
-          >
-            +91-9876543210
-          </a>
-        </span>
-        <span className="flex items-center justify-center gap-1">
-          <span className="font-medium">Instagram:</span>
-          <a
-            href="https://instagram.com/mocktestpro"
-            className="text-blue-600 hover:underline"
-          >
-            @mocktestpro
-          </a>
-        </span>
-      </div>
+     
       <div className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-gray-500 px-4">
         <span>
           India's #1 platform for NEET & JEE mock tests, analytics, and smart
