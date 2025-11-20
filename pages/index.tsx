@@ -1,105 +1,105 @@
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { School, Assessment, Speed, Quiz } from '@mui/icons-material';
+
+const COLORS = {
+  primary: 'bg-gradient-to-r from-blue-700 to-indigo-700',
+  secondary: 'bg-gradient-to-r from-blue-100 to-indigo-100',
+  accent: 'text-blue-700',
+  card: 'bg-white',
+  border: 'border-gray-200',
+  icon: 'text-blue-600',
+  cta: 'bg-blue-600 text-white',
+};
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     try {
-      const token = localStorage.getItem('accessToken')
-      const phone = localStorage.getItem('userPhone')
-      const userId = localStorage.getItem('userId')
+      const token = localStorage.getItem('accessToken');
+      const phone = localStorage.getItem('userPhone');
+      const userId = localStorage.getItem('userId');
       if (token || phone || userId) {
-        // already logged in -> redirect to dashboard
-        router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`)
+        router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`);
       }
     } catch (e) {}
-  }, [])
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+    <div className={`min-h-screen flex items-center justify-center py-12 px-4 ${COLORS.secondary}`}>
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl form-card"
+        transition={{ duration: 0.6 }}
+        className={`w-full max-w-3xl ${COLORS.card} rounded-2xl shadow-2xl border ${COLORS.border}`}
       >
-        {/* Header Section */}
-        <div className="text-center px-10 pt-10 pb-6 border-b border-gray-100">
-          <h1 className="text-5xl font-extrabold text-accent leading-tight">
-            Mock Test Platform
+        {/* Hero Section */}
+        <div className="text-center px-8 pt-12 pb-8 border-b border-gray-100">
+          <div className="flex justify-center mb-4">
+            <School fontSize="large" className={COLORS.icon} />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-2">
+            NEET & JEE Mock Test Platform
           </h1>
-          <p className="text-2xl font-bold text-gray-900 mt-2">NEET & JEE Preparation</p>
-          <p className="mt-4 muted text-lg max-w-2xl mx-auto">
-            Master your exam strategy with full-length mock tests, in-depth performance analytics, 
-            and personalized weak-topic recommendations. Practice like the real exam.
+          <p className="text-lg md:text-xl text-gray-700 font-medium mb-4">
+            Practice. Analyze. Improve. Succeed.
+          </p>
+          <p className="text-base text-gray-500 max-w-xl mx-auto">
+            The most advanced mock test experience for serious NEET & JEE aspirants. Get instant analytics, personalized recommendations, and real exam simulation.
           </p>
         </div>
 
-        {/* Key Features Grid */}
-        <div className="px-10 py-8">
-          <h3 className="font-bold text-accent text-xl mb-6 text-center">Why Choose Our Platform?</h3>
+        {/* Features Section */}
+        <div className="px-8 py-10">
+          <h3 className="font-bold text-xl mb-8 text-center text-gray-800">Key Features</h3>
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Feature 1 */}
-            <div className="p-5 border border-gray-200 rounded-lg bg-gradient-to-br from-blue-50 to-white hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📝</span>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-lg">Full-Length Mock Tests</h4>
-                  <p className="text-gray-600 mt-1 text-sm">
-                    Timed tests exactly like NEET/JEE pattern with 180-200 questions. Experience real exam pressure with sectional breakdown.
-                  </p>
-                </div>
+            <div className={`p-5 border ${COLORS.border} rounded-xl bg-white shadow-sm hover:shadow-lg transition-shadow`}>
+              <div className="flex items-center gap-3 mb-2">
+                <Quiz fontSize="medium" className={COLORS.icon} />
+                <span className="font-semibold text-gray-900">Real Exam Mock Tests</span>
               </div>
+              <p className="text-gray-600 text-sm">
+                Attempt full-length NEET/JEE pattern tests with timer, negative marking, and sectional analysis. Experience the real exam pressure.
+              </p>
             </div>
-
-            {/* Feature 2 */}
-            <div className="p-5 border border-gray-200 rounded-lg bg-gradient-to-br from-blue-50 to-white hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🎯</span>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-lg">Subject-Wise Practice</h4>
-                  <p className="text-gray-600 mt-1 text-sm">
-                    Dedicated question palettes for Physics, Chemistry & Mathematics/Biology. Focus on weak subjects strategically.
-                  </p>
-                </div>
+            <div className={`p-5 border ${COLORS.border} rounded-xl bg-white shadow-sm hover:shadow-lg transition-shadow`}>
+              <div className="flex items-center gap-3 mb-2">
+                <Assessment fontSize="medium" className={COLORS.icon} />
+                <span className="font-semibold text-gray-900">Instant Performance Analytics</span>
               </div>
+              <p className="text-gray-600 text-sm">
+                Get detailed accuracy, speed, and topic-wise breakdown after every test. Track your progress and boost your rank.
+              </p>
             </div>
-
-            {/* Feature 3 */}
-            <div className="p-5 border border-gray-200 rounded-lg bg-gradient-to-br from-blue-50 to-white hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📊</span>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-lg">Detailed Analytics</h4>
-                  <p className="text-gray-600 mt-1 text-sm">
-                    Get accuracy reports, time management insights, rank predictions, and topic-wise performance breakdowns after every test.
-                  </p>
-                </div>
+            <div className={`p-5 border ${COLORS.border} rounded-xl bg-white shadow-sm hover:shadow-lg transition-shadow`}>
+              <div className="flex items-center gap-3 mb-2">
+                <Speed fontSize="medium" className={COLORS.icon} />
+                <span className="font-semibold text-gray-900">Speed & Accuracy Builder</span>
               </div>
+              <p className="text-gray-600 text-sm">
+                Practice with time tracking per question. Learn to optimize speed and accuracy for the real exam.
+              </p>
             </div>
-
-            {/* Feature 4 */}
-            <div className="p-5 border border-gray-200 rounded-lg bg-gradient-to-br from-blue-50 to-white hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">⚡</span>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-lg">Speed & Accuracy Builder</h4>
-                  <p className="text-gray-600 mt-1 text-sm">
-                    Track your solving speed per question. Build confidence with negative marking system and learn time optimization.
-                  </p>
-                </div>
+            <div className={`p-5 border ${COLORS.border} rounded-xl bg-white shadow-sm hover:shadow-lg transition-shadow`}>
+              <div className="flex items-center gap-3 mb-2">
+                <School fontSize="medium" className={COLORS.icon} />
+                <span className="font-semibold text-gray-900">Subject-Wise Practice</span>
               </div>
+              <p className="text-gray-600 text-sm">
+                Focus on Physics, Chemistry, Maths/Biology. Strengthen weak areas with targeted practice sets and chapter-wise tests.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Exam Coverage Section */}
-        <div className="px-10 pb-8">
-          <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
-            <h3 className="font-bold text-accent text-lg mb-4 flex items-center gap-2">
-              <span>🎓</span> Complete Exam Coverage
+        <div className="px-8 pb-8">
+          <div className={`p-6 bg-gray-50 border ${COLORS.border} rounded-xl`}>
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-700">
+              <School fontSize="small" className={COLORS.icon} /> Complete Exam Coverage
             </h3>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <div>
@@ -125,15 +125,15 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center px-10 pb-10">
+        <div className="text-center px-8 pb-12">
           <p className="text-gray-600 mb-6 text-sm">
-            Join thousands of students preparing smarter. Track progress, identify weak areas, and boost your rank.
+            Join thousands of NEET & JEE aspirants. Track your progress, identify weak areas, and boost your rank.
           </p>
           <Link 
             href="/login" 
-            className="btn-primary inline-flex items-center shadow-lg hover:shadow-xl transition-all text-lg px-8 py-3"
+            className={`inline-flex items-center shadow-lg hover:shadow-xl transition-all text-lg px-8 py-3 rounded-full font-semibold ${COLORS.cta}`}
           >
-            Start Your Preparation →
+            Start Your Preparation
           </Link>
           <p className="mt-4 text-xs text-gray-500">
             Free practice tests available • No credit card required
@@ -141,5 +141,5 @@ export default function Home() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

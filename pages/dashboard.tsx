@@ -81,12 +81,8 @@ export default function Dashboard() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
-
-
   return (
     <div className="min-h-screen bg-gray-50">
-     
-
       <main className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -104,11 +100,9 @@ export default function Dashboard() {
                 Select your exam and begin your test preparation
               </p>
             </div>
-           
           </div>
         </motion.div>
 
-      
         {/* Category Tabs */}
         <motion.div
           className="flex gap-3 mb-8"
@@ -281,17 +275,6 @@ export default function Dashboard() {
         )}
       </main>
 
-      {/* Footer */}
-      <motion.footer
-        className="mt-16 py-6 border-t border-gray-200 bg-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-gray-600">
-          <p>© 2024 MockTest Pro. All rights reserved.</p>
-        </div>
-      </motion.footer>
     </div>
   );
 }

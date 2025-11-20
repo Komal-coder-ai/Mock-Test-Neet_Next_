@@ -64,8 +64,7 @@ function Header() {
               </a>
               <a
                 onClick={() => {
-                  if (userId)
-                    router.push("/profile");
+                  if (userId) router.push("/profile");
                   else router.push("/login");
                 }}
                 className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
@@ -108,13 +107,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      {userId ? (
+      {/* {userId ? (
         <Layout>
           <Component {...pageProps} />
         </Layout>
       ) : (
         <Component {...pageProps} />
-      )}
+      )} */}
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </>
   );
 }
