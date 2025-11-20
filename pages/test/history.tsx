@@ -89,9 +89,18 @@ export default function TestHistoryPage() {
                 </div>
               </div>
 
-              <div className="border-t pt-4 mt-4">
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm" onClick={() => router.push(`/results/${r._id}`)}>
+              <div className="border-t pt-4 mt-4 flex justify-between">
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm mr-2"
+                  onClick={() => router.push(`/results/${r._id}`)}
+                >
                   <Eye size={16} /> View Details
+                </button>
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm bg-blue-600 text-white"
+                  onClick={() => router.push(`/test/${r.paperId}/begin`)}
+                >
+                  Try Again
                 </button>
               </div>
             </motion.div>
