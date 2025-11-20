@@ -251,6 +251,19 @@ export default function TestRunner() {
     const list = filteredIndicesForSubject(activeSubject);
     if (list.length === 0) return;
     const pos = list.indexOf(currentIndex);
+    
+    // If we're on the last question in the filtered list
+    if (pos >= 0 && pos === list.length - 1) {
+      // Check if this is the actual last question of the entire test (not just filtered)
+      const isActualLastQuestion = currentIndex === total - 1;
+      
+      if (isActualLastQuestion) {
+        // Auto-submit when on the very last question
+        setShowSubmitModal(true);
+        return;
+      }
+    }
+    
     const next = pos >= 0 && pos < list.length - 1 ? list[pos + 1] : list[0];
     setCurrentIndex(next);
   }
@@ -259,8 +272,13 @@ export default function TestRunner() {
     const list = filteredIndicesForSubject(activeSubject);
     if (list.length === 0) return;
     const pos = list.indexOf(currentIndex);
-    const prev = pos > 0 ? list[pos - 1] : list[list.length - 1];
-    setCurrentIndex(prev);
+    
+    // Only go to previous question if not on the first question
+    if (pos > 0) {
+      const prev = list[pos - 1];
+      setCurrentIndex(prev);
+    }
+    // If on first question (pos === 0), do nothing - don't cycle to last
   }
 
   const currentQ = questions[currentIndex];
@@ -491,9 +509,14 @@ export default function TestRunner() {
                   <div className="flex items-center gap-3">
                     <motion.button
                       onClick={prevQuestion}
-                      className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      disabled={currentIndex === 0}
+                      className={`flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-lg font-medium transition-colors ${
+                        currentIndex === 0 
+                          ? "opacity-50 cursor-not-allowed text-gray-400" 
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                      whileHover={currentIndex === 0 ? {} : { scale: 1.02 }}
+                      whileTap={currentIndex === 0 ? {} : { scale: 0.98 }}
                     >
                       <ChevronLeft size={18} />
                       Previous
@@ -523,7 +546,7 @@ export default function TestRunner() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      Next
+                      {currentIndex === total - 1 ? "Submit Test" : "Next"}
                       <ChevronRight size={18} />
                     </motion.button>
                   </div>

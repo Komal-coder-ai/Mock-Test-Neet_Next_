@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [category, setCategory] = useState<"JEE" | "NEET">("JEE");
   const [papers, setPapers] = useState<PaperItem[]>([]);
   const [page, setPage] = useState(1);
-  const [limit] = useState(5);
+  const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +59,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchPapers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, limit]);
 
   async function fetchPapers() {
     setLoading(true);
@@ -83,35 +83,55 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                 Available Question Papers
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 Select your exam and begin your test preparation
               </p>
+            </div>
+            {/* Page Limit Selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                Show:
+              </label>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1); // Reset to first page when changing limit
+                }}
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium bg-white hover:border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              >
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={15}>15 per page</option>
+                <option value={20}>20 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
             </div>
           </div>
         </motion.div>
 
         {/* Category Tabs */}
         <motion.div
-          className="flex gap-3 mb-8"
+          className="flex flex-col sm:flex-row gap-3 mb-6 sm:mb-8"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
           <motion.button
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
               category === "JEE"
                 ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
                 : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
@@ -124,7 +144,7 @@ export default function Dashboard() {
             JEE
           </motion.button>
           <motion.button
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
               category === "NEET"
                 ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm"
                 : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300"
@@ -142,7 +162,7 @@ export default function Dashboard() {
         <div className="space-y-4">
           {loading && (
             <motion.div
-              className="p-12 bg-white rounded-lg border border-gray-200 text-center"
+              className="p-6 sm:p-8 md:p-12 bg-white rounded-lg border border-gray-200 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
@@ -153,7 +173,7 @@ export default function Dashboard() {
               >
                 <TrendingUp size={40} className="text-blue-600" />
               </motion.div>
-              <p className="text-gray-600 font-medium">Loading papers...</p>
+              <p className="text-gray-600 font-medium text-sm sm:text-base">Loading papers...</p>
             </motion.div>
           )}
 
@@ -162,48 +182,50 @@ export default function Dashboard() {
               papers.map((p, idx) => (
                 <motion.div
                   key={p._id}
-                  className="bg-white rounded-lg p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
+                  className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: idx * 0.05 }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-start gap-4 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4 flex-1">
                       <div
-                        className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           category === "JEE"
                             ? "bg-gradient-to-br from-blue-600 to-indigo-600"
                             : "bg-gradient-to-br from-emerald-600 to-teal-600"
                         }`}
                       >
-                        <FileCheck size={24} className="text-white" />
+                        <FileCheck size={20} className="text-white sm:w-6 sm:h-6" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">
                           {p.title}
                         </h3>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600">
                           <span className="flex items-center gap-1">
                             <Clock size={14} />
-                            {p.durationMinutes} mins
+                            <span className="whitespace-nowrap">{p.durationMinutes} mins</span>
                           </span>
                           <span className="flex items-center gap-1">
                             <FileText size={14} />
-                            {p.totalQuestions} Questions
+                            <span className="whitespace-nowrap">{p.totalQuestions} Questions</span>
                           </span>
                           <span className="flex items-center gap-1">
                             <Calendar size={14} />
-                            {p.date
-                              ? new Date(p.date).toLocaleDateString()
-                              : "Latest"}
+                            <span className="whitespace-nowrap">
+                              {p.date
+                                ? new Date(p.date).toLocaleDateString()
+                                : "Latest"}
+                            </span>
                           </span>
                         </div>
                       </div>
                     </div>
 
                     <motion.button
-                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all"
+                      className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all text-sm sm:text-base whitespace-nowrap"
                       onClick={() =>
                         router.push(
                           `/test/${p._id}?phone=${encodeURIComponent(phone)}`
@@ -221,15 +243,15 @@ export default function Dashboard() {
 
           {!loading && papers.length === 0 && (
             <motion.div
-              className="p-12 bg-white rounded-lg border border-gray-200 text-center"
+              className="p-6 sm:p-8 md:p-12 bg-white rounded-lg border border-gray-200 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
             >
               <FileText size={48} className="text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                 No Papers Available
               </h3>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Check back later for new {category} papers
               </p>
             </motion.div>
@@ -239,35 +261,38 @@ export default function Dashboard() {
         {/* Pagination */}
         {!loading && papers.length > 0 && (
           <motion.div
-            className="mt-8 flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200"
+            className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white rounded-lg border border-gray-200"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
               Page <span className="font-semibold text-gray-900">{page}</span>{" "}
               of{" "}
               <span className="font-semibold text-gray-900">{totalPages}</span>
+              <span className="block sm:inline sm:ml-2">({total} total papers)</span>
             </div>
             <div className="flex gap-2">
               <motion.button
-                className="flex items-center gap-1 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-3 sm:px-4 py-2 border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
                 whileHover={{ scale: page > 1 ? 1.02 : 1 }}
                 whileTap={{ scale: page > 1 ? 0.98 : 1 }}
               >
                 <ChevronLeft size={16} />
-                Previous
+                <span className="hidden xs:inline">Previous</span>
+                <span className="xs:hidden">Prev</span>
               </motion.button>
               <motion.button
-                className="flex items-center gap-1 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-3 sm:px-4 py-2 border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
                 whileHover={{ scale: page < totalPages ? 1.02 : 1 }}
                 whileTap={{ scale: page < totalPages ? 0.98 : 1 }}
               >
-                Next
+                <span className="hidden xs:inline">Next</span>
+                <span className="xs:hidden">Next</span>
                 <ChevronRight size={16} />
               </motion.button>
             </div>

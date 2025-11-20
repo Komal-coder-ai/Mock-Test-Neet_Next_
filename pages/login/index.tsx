@@ -6,6 +6,27 @@ import { Formik, Form, Field } from "formik";
 import ErrorMsg from "../../components/ErrorMsg";
 import Toast from "../../components/Toast";
 
+// API Functions
+const sendOTP = async (phone: string) => {
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  });
+  const data = await res.json();
+  return { res, data };
+};
+
+const verifyOTP = async (phone: string, otp: string) => {
+  const res = await fetch("/api/verify-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, otp }),
+  });
+  const data = await res.json();
+  return { res, data };
+};
+
 function OTPBoxes({
   value,
   onChange,
@@ -48,7 +69,7 @@ function OTPBoxes({
   const chars = value.split("").slice(0, 6);
 
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex gap-1.5 sm:gap-2 justify-center">
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.input
           key={i}
@@ -59,7 +80,7 @@ function OTPBoxes({
             handleChange(i, e.target.value.replace(/[^0-9]/g, "").slice(0, 1))
           }
           onKeyDown={(e) => handleKeyDown(e, i)}
-          className="w-12 h-12 text-center border-2 border-gray-300 rounded-lg text-xl font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center border-2 border-gray-300 rounded-lg text-lg sm:text-xl font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
           inputMode="numeric"
           maxLength={1}
           initial={{ scale: 0.8, opacity: 0 }}
@@ -118,17 +139,17 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen md:flex bg-gray-50">
+    <div className="min-h-screen lg:flex bg-gray-50">
       {/* Left Hero Section */}
       <motion.div
-        className="md:w-1/2 hero-left p-10 items-center justify-center hidden md:flex relative overflow-hidden"
+        className="lg:w-1/2 hero-left p-6 sm:p-8 md:p-10 items-center justify-center hidden lg:flex relative overflow-hidden"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
         {/* Animated background circles */}
         <motion.div
-          className="absolute top-20 right-20 w-64 h-64 bg-white opacity-5 rounded-full"
+          className="absolute top-10 sm:top-20 right-10 sm:right-20 w-48 h-48 sm:w-64 sm:h-64 bg-white opacity-5 rounded-full"
           animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 180, 360],
@@ -136,7 +157,7 @@ export default function LoginPage() {
           transition={{ duration: 20, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-20 left-20 w-48 h-48 bg-white opacity-5 rounded-full"
+          className="absolute bottom-10 sm:bottom-20 left-10 sm:left-20 w-32 h-32 sm:w-48 sm:h-48 bg-white opacity-5 rounded-full"
           animate={{
             scale: [1, 1.3, 1],
             rotate: [360, 180, 0],
@@ -150,18 +171,18 @@ export default function LoginPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h1 className="hero-title font-extrabold">Welcome Back!</h1>
-            <p className="mt-4 text-lg text-blue-100">
+            <h1 className="hero-title font-extrabold text-2xl sm:text-3xl md:text-4xl">Welcome Back!</h1>
+            <p className="mt-3 sm:mt-4 text-base sm:text-lg text-blue-100">
               Sign in to continue your NEET & JEE preparation journey.
             </p>
           </motion.div>
 
           {/* Features Grid */}
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {features.map((feature, idx) => (
               <motion.div
                 key={idx}
-                className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 border border-white border-opacity-20"
+                className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white border-opacity-20"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 + idx * 0.1 }}
@@ -170,26 +191,25 @@ export default function LoginPage() {
                   backgroundColor: "rgba(255,255,255,0.15)",
                 }}
               >
-                {feature.icon}
-
-                <h3 className="font-semibold text-white text-sm">
+                <div className="text-lg sm:text-xl mb-2">{feature.icon}</div>
+                <h3 className="font-semibold text-white text-xs sm:text-sm">
                   {feature.title}
                 </h3>
-                <p className="text-xs text-blue-100 mt-1">{feature.desc}</p>
+                <p className="text-[10px] sm:text-xs text-blue-100 mt-1">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
 
           <motion.div
-            className="mt-8"
+            className="mt-6 sm:mt-8"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <p className="text-sm text-blue-100 mb-3">New to our platform?</p>
+            <p className="text-xs sm:text-sm text-blue-100 mb-3">New to our platform?</p>
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-900 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg"
+              className="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-blue-900 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg text-sm sm:text-base"
             >
               Create Account →
             </Link>
@@ -198,17 +218,17 @@ export default function LoginPage() {
       </motion.div>
 
       {/* Right Form Section */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-6">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-md form-card p-8"
+          className="w-full max-w-md form-card p-6 sm:p-8"
         >
           {/* Header with animated icon */}
           <div className="text-center mb-6">
             <motion.div
-              className="inline-block text-5xl mb-3"
+              className="inline-block text-4xl sm:text-5xl mb-3"
               animate={{
                 rotate: [0, -10, 10, -10, 0],
                 scale: [1, 1.1, 1],
@@ -217,8 +237,8 @@ export default function LoginPage() {
             >
               🔐
             </motion.div>
-            <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
-            <p className="muted mt-2">Enter your phone number to receive OTP</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Sign In</h2>
+            <p className="muted mt-2 text-sm sm:text-base">Enter your phone number to receive OTP</p>
           </div>
 
           <Formik
@@ -243,12 +263,9 @@ export default function LoginPage() {
                   setSubmitting(false);
                   return;
                 }
-                const res = await fetch("/api/login", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ phone }),
-                });
-                const data = await res.json();
+                
+                const { res, data } = await sendOTP(phone);
+                
                 if (res.ok) {
                   setMessage("OTP sent (check response in dev)");
                   setReOTP(data.otp || "");
@@ -277,7 +294,7 @@ export default function LoginPage() {
                     exit={{ opacity: 0, x: 20 }}
                   >
                     <div>
-                      <label className="block  text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <label className="flex text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
                         <span>📞</span> Phone Number
                       </label>
                       <Field name="phone">
@@ -292,7 +309,7 @@ export default function LoginPage() {
                                 target: { name: field.name, value: digits },
                               });
                             }}
-                            className="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                            className="w-full border-2 border-gray-300 rounded-lg p-3 text-base sm:text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                             placeholder="Enter 10-digit number"
                           />
                         )}
@@ -310,7 +327,7 @@ export default function LoginPage() {
                     )}
                     {error && <ErrorMsg>{error}</ErrorMsg>}
                     <motion.button
-                      className="w-full mt-3 btn-primary py-3 text-lg font-semibold rounded-lg shadow-md"
+                      className="w-full mt-3 btn-primary py-3 text-base sm:text-lg font-semibold rounded-lg shadow-md"
                       type="submit"
                       disabled={isSubmitting}
                       whileHover={{ scale: 1.02 }}
@@ -345,7 +362,7 @@ export default function LoginPage() {
                   >
                     <div className="text-center mb-4">
                       <motion.div
-                        className="inline-block text-4xl mb-2"
+                        className="inline-block text-3xl sm:text-4xl mb-2"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >
@@ -364,9 +381,13 @@ export default function LoginPage() {
                     </div>
 
                     {error && <ErrorMsg>{error}</ErrorMsg>}
-<p className="flex justify-center"> {ReOTP }</p>
+                    <div className="flex justify-center mb-4">
+                      <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-md font-mono">
+                        Dev OTP: {ReOTP}
+                      </span>
+                    </div>
                     <motion.button
-                      className="w-full btn-primary py-3 text-lg font-semibold rounded-lg shadow-md mt-4"
+                      className="w-full btn-primary py-3 text-base sm:text-lg font-semibold rounded-lg shadow-md mt-4"
                       type="button"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -376,12 +397,8 @@ export default function LoginPage() {
                           return;
                         }
                         try {
-                          const res = await fetch("/api/verify-otp", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ phone: phoneStored, otp }),
-                          });
-                          const data = await res.json();
+                          const { res, data } = await verifyOTP(phoneStored, otp);
+                          
                           if (res.ok) {
                             try {
                               if (data?.accessToken)
@@ -415,14 +432,13 @@ export default function LoginPage() {
                         }
                       }}
                     >
-                     
                       Verify & Continue ✓
                     </motion.button>
 
-                    <div className="flex gap-3 mt-4">
+                    <div className="flex flex-col xs:flex-row gap-3 mt-4">
                       <motion.button
                         type="button"
-                        className="flex-1 border-2 border-gray-300 rounded-lg py-2 font-medium hover:bg-gray-50 transition-all"
+                        className="flex-1 border-2 border-gray-300 rounded-lg py-2.5 font-medium hover:bg-gray-50 transition-all text-sm sm:text-base"
                         onClick={() => setStep("request")}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -431,7 +447,7 @@ export default function LoginPage() {
                       </motion.button>
                       <motion.button
                         type="button"
-                        className="flex-1 border-2 border-blue-500 text-blue-600 rounded-lg py-2 font-medium hover:bg-blue-50 transition-all"
+                        className="flex-1 border-2 border-blue-500 text-blue-600 rounded-lg py-2.5 font-medium hover:bg-blue-50 transition-all text-sm sm:text-base"
                         onClick={() => setStep("request")}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -461,7 +477,7 @@ export default function LoginPage() {
               </Link>
             </p>
             <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 🔒 Your data is encrypted and secure. By signing in, you agree
                 to our terms of service.
               </p>
