@@ -91,6 +91,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phoneStored, setPhoneStored] = useState("");
+  const [ReOTP, setReOTP] = useState("");
   const [otp, setOtp] = useState("");
 
   const features = [
@@ -250,6 +251,7 @@ export default function LoginPage() {
                 const data = await res.json();
                 if (res.ok) {
                   setMessage("OTP sent (check response in dev)");
+                  setReOTP(data.otp || "");
                   if (data?.otp) setMessage((m) => `${m} — OTP: ${data.otp}`);
                   setPhoneStored(phone);
                   try {
@@ -362,7 +364,7 @@ export default function LoginPage() {
                     </div>
 
                     {error && <ErrorMsg>{error}</ErrorMsg>}
-
+<p className="flex justify-center"> {ReOTP }</p>
                     <motion.button
                       className="w-full btn-primary py-3 text-lg font-semibold rounded-lg shadow-md mt-4"
                       type="button"
@@ -413,6 +415,7 @@ export default function LoginPage() {
                         }
                       }}
                     >
+                     
                       Verify & Continue ✓
                     </motion.button>
 
