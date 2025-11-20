@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
 import { Eye } from 'lucide-react'
 
-export default function TestHistory() {
+export default function TestHistoryPage() {
   const router = useRouter()
   const [userPhone, setUserPhone] = useState<string | null>(null)
   const [results, setResults] = useState<any[]>([])
