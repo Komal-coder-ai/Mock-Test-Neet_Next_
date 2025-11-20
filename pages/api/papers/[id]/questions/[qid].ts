@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const paper = await Paper.findById(id)
       if (!paper) return res.status(404).json({ ok: false, error: 'Paper not found' })
 
-      const q: any = (paper.questions || []).id(qid)
+   const q: any = (paper.questions || []).find((q: any) => String(q._id) === String(qid))
       if (!q) return res.status(404).json({ ok: false, error: 'Question not found' })
 
       q.text = text
@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const paper = await Paper.findById(id)
       if (!paper) return res.status(404).json({ ok: false, error: 'Paper not found' })
 
-      const q = (paper.questions || []).id(qid)
+      const q: any = (paper.questions || []).find((q: any) => String(q._id) === String(qid))
       if (!q) return res.status(404).json({ ok: false, error: 'Question not found' })
 
       q.remove()

@@ -52,7 +52,7 @@ function OTPBoxes({
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.input
           key={i}
-          ref={(el) => (inputs.current[i] = el!)}
+         ref={(el) => { inputs.current[i] = el!; }}
           value={chars[i] || ""}
           onPaste={handlePaste}  // ⭐ NEW
           onChange={(e) =>
