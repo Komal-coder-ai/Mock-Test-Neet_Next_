@@ -294,10 +294,10 @@ export default function TestRunner() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
             {/* Title & Progress */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full md:w-auto">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
                   <BookOpen size={20} className="text-white" />
@@ -312,10 +312,18 @@ export default function TestRunner() {
                 </div>
               </div>
 
-              <div className="hidden lg:flex items-center gap-3">
-                <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="flex items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                <div className="w-full sm:w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+                    className="h-full"
+                    style={{
+                      background:
+                        Math.round((answeredCount / Math.max(1, total)) * 100) < 40
+                          ? 'linear-gradient(to right, #f87171, #fbbf24)' // red to yellow
+                          : Math.round((answeredCount / Math.max(1, total)) * 100) < 80
+                          ? 'linear-gradient(to right, #fbbf24, #60a5fa)' // yellow to blue
+                          : 'linear-gradient(to right, #34d399, #2563eb)', // green to blue
+                    }}
                     initial={{ width: 0 }}
                     animate={{
                       width: `${(answeredCount / Math.max(1, total)) * 100}%`,
@@ -323,7 +331,7 @@ export default function TestRunner() {
                     transition={{ duration: 0.3 }}
                   />
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 min-w-[40px] text-right">
                   {Math.round((answeredCount / Math.max(1, total)) * 100)}%
                 </span>
               </div>
@@ -331,7 +339,7 @@ export default function TestRunner() {
 
             {/* Timer */}
             <div
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg border-2 ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg border-2 mt-4 md:mt-0 w-full md:w-auto justify-between md:justify-start ${
                 isLowTime
                   ? "border-red-500 bg-red-50"
                   : "border-gray-200 bg-white"
@@ -341,7 +349,7 @@ export default function TestRunner() {
                 size={20}
                 className={isLowTime ? "text-red-600" : "text-gray-600"}
               />
-              <div>
+              <div className="flex flex-col items-start">
                 <p className="text-xs text-gray-600">Time Remaining</p>
                 <p
                   className={`text-lg font-mono font-bold ${
@@ -356,13 +364,13 @@ export default function TestRunner() {
         </div>
       </motion.div>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Content */}
-          <div className="col-span-12 lg:col-span-9">
+          <div className="col-span-1 lg:col-span-9">
             {/* Subject Tabs */}
             <motion.div
-              className="flex gap-3 mb-6 overflow-x-auto pb-2"
+              className="flex gap-2 sm:gap-3 mb-6 overflow-x-auto pb-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -402,7 +410,7 @@ export default function TestRunner() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
-                className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm"
+                className="bg-white rounded-lg border border-gray-200 p-4 sm:p-8 shadow-sm"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -428,14 +436,14 @@ export default function TestRunner() {
                 </div>
 
                 {/* Question Text */}
-                <div className="mb-8">
-                  <p className="text-lg font-medium text-gray-900 leading-relaxed">
+                <div className="mb-6 sm:mb-8">
+                  <p className="text-base sm:text-lg font-medium text-gray-900 leading-relaxed">
                     {currentQ?.text || "No question available"}
                   </p>
                 </div>
 
                 {/* Options */}
-                <div className="space-y-3 mb-8">
+                <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                   {(currentQ?.options || []).map((opt, i) => {
                     const isSelected = selectedAnswers[currentIndex] === i;
                     return (
@@ -473,7 +481,7 @@ export default function TestRunner() {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row items-center justify-between pt-6 border-t border-gray-200 gap-3">
                   {/* Converted 'Mark for Review' Checkbox to a Toggle Button */}
                   <motion.button
                     onClick={() => toggleMark(currentIndex)}
@@ -508,7 +516,7 @@ export default function TestRunner() {
                     </span>
                   </motion.button>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                     <motion.button
                       onClick={prevQuestion}
                       disabled={currentIndex === 0}
@@ -558,8 +566,8 @@ export default function TestRunner() {
           </div>
 
           {/* Sidebar */}
-          <aside className="col-span-12 lg:col-span-3">
-            <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24 shadow-sm">
+          <aside className="col-span-1 lg:col-span-3 mt-6 lg:mt-0">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 sticky top-24 shadow-sm">
               {/* Stats */}
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 size={20} className="text-gray-600" />
@@ -568,7 +576,7 @@ export default function TestRunner() {
                 </h3>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
                 <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
                   <CheckCircle2
                     size={20}
@@ -606,7 +614,7 @@ export default function TestRunner() {
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">
                   Question Palette
                 </h4>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                   {questions.map((_, i) => {
                     const answered = selectedAnswers[i] !== undefined;
                     const isMarked = !!marked[i];

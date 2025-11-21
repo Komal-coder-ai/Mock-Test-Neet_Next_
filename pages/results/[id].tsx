@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, ChevronDown, ChevronUp, History } from "lucide-react";
-import Confetti from 'react-confetti';
+import {
+  CheckCircle2,
+  XCircle,
+  ChevronDown,
+  ChevronUp,
+  History,
+} from "lucide-react";
+import Confetti from "react-confetti";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -52,48 +58,72 @@ export default function StoredResult() {
   }, [id]);
 
   if (loading)
-      return (
-        <div className="min-h-screen flex flex-col items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
-            className="mb-4 flex items-center gap-3"
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+          className="mb-4 flex items-center gap-3"
+        >
+          <svg
+            className="animate-spin h-10 w-10 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
           >
-            <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-            </svg>
-            <History className="h-8 w-8 text-blue-400" />
-          </motion.div>
-          <div className="text-blue-700 font-medium text-lg mb-6">Loading your result...</div>
-          {/* Skeleton loader */}
-          <div className="w-full max-w-2xl mx-auto">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
-              <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
-              <div className="h-32 bg-gray-200 rounded" />
-              <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
-            </div>
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+          <History className="h-8 w-8 text-blue-400" />
+        </motion.div>
+        <div className="text-blue-700 font-medium text-lg mb-6">
+          Loading your result...
+        </div>
+        {/* Skeleton loader */}
+        <div className="w-full max-w-2xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
+            <div className="h-32 bg-gray-200 rounded" />
+            <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
           </div>
         </div>
-      );
+      </div>
+    );
   if (!result || !paper)
-      return (
-        <div className="min-h-screen flex flex-col items-center justify-center">
-          <XCircle className="h-10 w-10 text-red-400 mb-4" />
-          <div className="text-red-700 font-medium text-lg mb-6">No result found</div>
-          {/* Skeleton loader for no result */}
-          <div className="w-full max-w-2xl mx-auto">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
-              <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
-              <div className="h-32 bg-gray-200 rounded" />
-              <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
-            </div>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <XCircle className="h-10 w-10 text-red-400 mb-4" />
+        <div className="text-red-700 font-medium text-lg mb-6">
+          No result found
+        </div>
+        {/* Skeleton loader for no result */}
+        <div className="w-full max-w-2xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
+            <div className="h-32 bg-gray-200 rounded" />
+            <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
           </div>
         </div>
-      );
+      </div>
+    );
 
   // Subjects for analysis
   const subjects = Object.keys(result.subjectBreakdown || {}).map((key) => ({
@@ -138,7 +168,12 @@ export default function StoredResult() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Confetti celebration when result is loaded */}
-      <Confetti numberOfPieces={120} recycle={false} width={window.innerWidth} height={window.innerHeight} />
+      <Confetti
+        numberOfPieces={120}
+        recycle={false}
+        width={window.innerWidth}
+        height={window.innerHeight}
+      />
       <div className="max-w-4xl mx-auto px-4">
         <motion.div
           className="bg-white p-6 rounded-lg shadow-lg transition-shadow hover:shadow-xl"
@@ -161,7 +196,7 @@ export default function StoredResult() {
 
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="p-4 bg-blue-50 rounded-lg text-center shadow-sm">
-              <div className="text-sm text-gray-600">Total</div>
+              <div className="text-sm text-gray-600">Total Questions</div>
               <div className="text-lg font-bold text-blue-700">
                 {result.total}
               </div>
@@ -182,21 +217,9 @@ export default function StoredResult() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="p-4 bg-blue-50 rounded-lg text-center flex flex-col items-center shadow-sm">
-              <div className="text-sm text-gray-600">Total Score</div>
-              <div className="text-lg font-bold text-blue-700">
-                {result.score}/{result.maxScore}
-              </div>
-            </div>
-            <div className="p-4 bg-green-50 rounded-lg text-center flex flex-col items-center shadow-sm">
               <div className="text-sm text-gray-600">Accuracy</div>
-              <div className="text-lg font-bold text-green-700">
-                {result.accuracy}%
-              </div>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg text-center flex flex-col items-center shadow-sm">
-              <div className="text-sm text-gray-600">Correct</div>
               <div className="text-lg font-bold text-blue-700">
-                {result.correctCount}/{result.total}
+                {result.percent}%
               </div>
             </div>
           </div>
@@ -216,7 +239,7 @@ export default function StoredResult() {
             </div>
             <div className="flex-1 flex flex-col items-center">
               <div className="text-blue-600 font-bold text-lg">
-                {result.unansweredCount}
+                {result.total - result.answeredCount}
               </div>
               <div className="text-gray-600 text-sm">Unanswered</div>
             </div>
@@ -228,38 +251,48 @@ export default function StoredResult() {
             </h3>
             <Bar data={subjectData} options={subjectOptions} />
           </div>
- 
+
           {/* Detailed Analysis */}
           <div className="mt-8">
             <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
-            <div className="space-y-3">
-              {subjects.map((sub) => (
-                <div key={sub.name} className="bg-gray-50 border rounded-lg">
-                  <button
-                    className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
-                    onClick={() =>
-                      setExpanded(expanded === sub.name ? null : sub.name)
-                    }
-                  >
-                    <span className="font-semibold text-gray-800">
-                      {sub.name}
-                    </span>
-                    <span className="text-xs text-gray-600">
-                      {sub.correct || 0} / {sub.attempted || 0} attempted / {sub.total || 0} total
-                    </span>
-
-                    <button
-                      className=" items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm bg-blue-600 text-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(`/test/${paper._id}/review`, "_blank");
-                      }}
-                    >
-                      view
-                    </button>
-                  </button>
-                </div>
-              ))}
+            <div className="space-y-3" >
+              {subjects.map((sub) => {
+                const percent = sub.total ? Math.round((sub.correct / sub.total) * 100) : 0;
+                return (
+                  <div key={sub.name} className="w-full bg-gray-50 border rounded-lg px-4 py-3 mb-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-gray-800">
+                        {sub.name}
+                      </span>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-gray-600">
+                          {sub.correct || 0} / {sub.total || 0} correct
+                        </span>
+                        <button
+                          className="items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm bg-blue-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`/test/${paper._id}/review`, "_blank");
+                          }}
+                        >
+                          view
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="w-full mr-2">
+                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-blue-600"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-600 min-w-[40px] text-right">{percent}%</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

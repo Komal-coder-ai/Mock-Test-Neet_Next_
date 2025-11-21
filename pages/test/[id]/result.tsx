@@ -131,15 +131,7 @@ export default function ResultPage() {
               <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded ml-1">{result.percent}%</span>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 size={24} className="text-green-600" />
-            </div>
-            <div>
-              <div className="text-xs text-gray-600">Accuracy</div>
-              <div className="font-bold text-lg">{result.accuracy || result.percent}%</div>
-            </div>
-          </div>
+         
         </div>
 
         {/* Subject-wise Performance Bar Chart */}
@@ -154,23 +146,37 @@ export default function ResultPage() {
         <div className="mt-8">
           <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
           <div className="space-y-3">
-            {subjects.map((sub) => (
-              <div key={sub.name} className="bg-gray-50 border rounded-lg">
-                <div className="w-full flex items-center justify-between px-4 py-3">
-                  <span className="font-semibold text-gray-800">
-                    {sub.name}
-                  </span>
-                  <span className="text-xs text-gray-600">
-                    {sub.correct || 0} / {sub.attempted || 0} attempted / {sub.total || 0} total
-                  </span>
+            {subjects.map((sub) => {
+              const percent = sub.total ? Math.round((sub.correct / sub.total) * 100) : 0;
+              return (
+                <div key={sub.name} className="bg-gray-50 border rounded-lg px-4 py-3 mb-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold text-gray-800">
+                      {sub.name}
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      {sub.correct || 0} / {sub.total || 0} correct
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="w-full mr-2">
+                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-blue-600"
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-600 min-w-[40px] text-right">{percent}%</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
+        <div className="flex flex-col mt-4 md:flex-row gap-3 mb-6">
           <button
             className="w-full md:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold flex items-center justify-center gap-2 shadow"
             onClick={() => router.push(`/test/${String(id)}/review`)}
