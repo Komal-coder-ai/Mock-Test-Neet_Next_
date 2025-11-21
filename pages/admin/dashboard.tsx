@@ -542,6 +542,7 @@ export default function AdminDashboard() {
                       <option value="Physics">Physics</option>
                       <option value="Chemistry">Chemistry</option>
                       <option value="Mathematics">Mathematics</option>
+                      <option value="Biology">Biology</option>
                     </select>
                   </div>
 

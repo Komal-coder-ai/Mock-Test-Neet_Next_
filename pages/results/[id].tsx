@@ -64,11 +64,10 @@ export default function StoredResult() {
     );
 
   // Subjects for analysis
-  const subjects = [
-    { name: "Physics", ...result.subjectBreakdown?.Physics },
-    { name: "Chemistry", ...result.subjectBreakdown?.Chemistry },
-    { name: "Mathematics", ...result.subjectBreakdown?.Mathematics },
-  ];
+  const subjects = Object.keys(result.subjectBreakdown || {}).map((key) => ({
+    name: key,
+    ...result.subjectBreakdown[key],
+  }));
 
   const subjectData = {
     labels: subjects.map((sub) => sub.name),
@@ -77,6 +76,11 @@ export default function StoredResult() {
         label: "Correct Answers",
         data: subjects.map((sub) => sub.correct || 0),
         backgroundColor: "rgba(75, 192, 192, 0.6)",
+      },
+      {
+        label: "Attempted",
+        data: subjects.map((sub) => sub.attempted || 0),
+        backgroundColor: "rgba(255, 206, 86, 0.6)",
       },
       {
         label: "Total Questions",
@@ -190,7 +194,7 @@ export default function StoredResult() {
             </h3>
             <Bar data={subjectData} options={subjectOptions} />
           </div>
-
+ 
           {/* Detailed Analysis */}
           <div className="mt-8">
             <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
@@ -207,7 +211,7 @@ export default function StoredResult() {
                       {sub.name}
                     </span>
                     <span className="text-xs text-gray-600">
-                      {sub.correct || 0} / {sub.total || 0} correct
+                      {sub.correct || 0} / {sub.attempted || 0} attempted / {sub.total || 0} total
                     </span>
 
                     <button

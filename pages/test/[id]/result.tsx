@@ -2,13 +2,32 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, BarChartHorizontal, Info } from 'lucide-react'
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function ResultPage() {
   const router = useRouter()
   const { id } = router.query
   const [submission, setSubmission] = useState<any>(null)
   // For debugging
-  // console.log(submission, "submission");
+  console.log(submission, "submission");
 
   useEffect(() => {
     if (!id) return
@@ -36,24 +55,45 @@ export default function ResultPage() {
 
   const { result } = submission
 
-  // Use subjectBreakdown from result
-  const subjects = [
-    {
-      name: 'Physics',
-      correct: result.subjectBreakdown?.Physics?.correct || 0,
-      total: result.subjectBreakdown?.Physics?.total || 0
+  // Subjects for analysis
+  const subjects = Object.keys(result.subjectBreakdown || {}).map((key) => ({
+    name: key,
+    ...result.subjectBreakdown[key],
+  }));
+
+  const subjectData = {
+    labels: subjects.map((sub) => sub.name),
+    datasets: [
+      {
+        label: "Correct Answers",
+        data: subjects.map((sub) => sub.correct || 0),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+      },
+      {
+        label: "Attempted",
+        data: subjects.map((sub) => sub.attempted || 0),
+        backgroundColor: "rgba(255, 206, 86, 0.6)",
+      },
+      {
+        label: "Total Questions",
+        data: subjects.map((sub) => sub.total || 0),
+        backgroundColor: "rgba(153, 102, 255, 0.6)",
+      },
+    ],
+  };
+
+  const subjectOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Subject-wise Performance',
+      },
     },
-    {
-      name: 'Chemistry',
-      correct: result.subjectBreakdown?.Chemistry?.correct || 0,
-      total: result.subjectBreakdown?.Chemistry?.total || 0
-    },
-    {
-      name: 'Mathematics',
-      correct: result.subjectBreakdown?.Mathematics?.correct || 0,
-      total: result.subjectBreakdown?.Mathematics?.total || 0
-    }
-  ]
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -93,30 +133,27 @@ export default function ResultPage() {
         </div>
 
         {/* Subject-wise Performance Bar Chart */}
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <div className="font-semibold text-gray-900 mb-2">Subject-wise Performance</div>
-          <div className="w-full h-48 flex items-end gap-6">
-            {subjects.map((sub, idx) => (
-              <div key={sub.name} className="flex-1 flex flex-col items-center justify-end">
-                <div
-                  className={`w-16 md:w-20 rounded-t-lg ${sub.total ? 'bg-orange-400' : 'bg-gray-200'} transition-all`}
-                  style={{ height: `${sub.correct * 40}px` }}
-                ></div>
-                <span className="mt-2 text-xs text-gray-700">{sub.name}</span>
-              </div>
-            ))}
-          </div>
+        <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+          <h3 className="font-semibold text-lg mb-2 text-gray-800">
+            Subject-wise Performance
+          </h3>
+          <Bar data={subjectData} options={subjectOptions} />
         </div>
 
-        {/* Detailed Subject Analysis */}
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <div className="font-semibold text-gray-900 mb-2">Detailed Subject Analysis</div>
+        {/* Detailed Analysis */}
+        <div className="mt-8">
+          <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
           <div className="space-y-3">
-            {subjects.map((sub, idx) => (
-              <div key={sub.name} className="flex items-center gap-3 p-3 rounded-lg border bg-gray-50">
-                <span className={`w-3 h-3 rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-green-500' : 'bg-orange-400'}`}></span>
-                <span className="font-semibold text-gray-700">{sub.name}</span>
-                <span className="ml-auto text-xs text-gray-600">{sub.correct} / {sub.total} correct</span>
+            {subjects.map((sub) => (
+              <div key={sub.name} className="bg-gray-50 border rounded-lg">
+                <div className="w-full flex items-center justify-between px-4 py-3">
+                  <span className="font-semibold text-gray-800">
+                    {sub.name}
+                  </span>
+                  <span className="text-xs text-gray-600">
+                    {sub.correct || 0} / {sub.attempted || 0} attempted / {sub.total || 0} total
+                  </span>
+                </div>
               </div>
             ))}
           </div>

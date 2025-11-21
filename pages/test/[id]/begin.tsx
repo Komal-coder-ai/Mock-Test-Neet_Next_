@@ -262,7 +262,7 @@ export default function TestRunner() {
         setShowSubmitModal(true);
         return;
       }
-    }
+    } 
     
     const next = pos >= 0 && pos < list.length - 1 ? list[pos + 1] : list[0];
     setCurrentIndex(next);
