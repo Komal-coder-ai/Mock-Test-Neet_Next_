@@ -215,35 +215,8 @@ export default function StoredResult() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="p-4 bg-blue-50 rounded-lg text-center flex flex-col items-center shadow-sm">
-              <div className="text-sm text-gray-600">Accuracy</div>
-              <div className="text-lg font-bold text-blue-700">
-                {result.percent}%
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-4 mb-4 flex flex-col md:flex-row justify-between items-center shadow-sm">
-            <div className="flex-1 flex flex-col items-center">
-              <div className="text-green-600 font-bold text-lg">
-                {result.correctCount}
-              </div>
-              <div className="text-gray-600 text-sm">Correct</div>
-            </div>
-            <div className="flex-1 flex flex-col items-center">
-              <div className="text-red-600 font-bold text-lg">
-                {result.wrongCount}
-              </div>
-              <div className="text-gray-600 text-sm">Incorrect</div>
-            </div>
-            <div className="flex-1 flex flex-col items-center">
-              <div className="text-blue-600 font-bold text-lg">
-                {result.total - result.answeredCount}
-              </div>
-              <div className="text-gray-600 text-sm">Unanswered</div>
-            </div>
-          </div>
+        
+       
 
           <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
             <h3 className="font-semibold text-lg mb-2 text-gray-800">

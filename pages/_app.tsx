@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 function Header() {
   const router = useRouter();
@@ -107,13 +108,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      {/* {userId ? (
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      ) : (
-        <Component {...pageProps} />
-      )} */}
+      <Head>
+        <title>HPBOSE | NEET &amp; JEE Preparation</title>
+        <link rel="icon" href="/favicon.ico" />
+         </Head>
       <Layout>
         <Component {...pageProps} />
       </Layout>

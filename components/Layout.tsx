@@ -321,12 +321,16 @@ const Layout = ({
 }: {
   children: React.ReactNode;
   user?: any;
-}) => (
-  <div className=" bg-gray-50 flex flex-col">
-    <Navbar user={user} />
-    <main className="w-full ">{children}</main>
-    <Footer />
-  </div>
-);
+}) => {
+  const router = useRouter();
+  const isTestBeginPage = router.pathname.startsWith('/test/') && router.pathname.endsWith('/begin');
+  return (
+    <div className="bg-gray-50 flex flex-col">
+      {!isTestBeginPage && <Navbar user={user} />}
+      <main className="w-full ">{children}</main>
+      {!isTestBeginPage && <Footer />}
+    </div>
+  );
+};
 
 export default Layout;
