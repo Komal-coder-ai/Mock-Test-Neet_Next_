@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
-import { CheckCircle2, ArrowRight, BarChartHorizontal, Info } from 'lucide-react'
+import { CheckCircle2, ArrowRight, BarChartHorizontal, Info, XCircle, History } from 'lucide-react'
+import Confetti from 'react-confetti';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -41,13 +42,20 @@ export default function ResultPage() {
 
   if (!submission) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow">
-          <h3 className="text-lg font-semibold">No submission found</h3>
-          <p className="text-sm text-gray-600 mt-2">We couldn't find a recent submission for this test. You can go back to take the test.</p>
-          <div className="mt-4">
-            <button className="px-4 py-2 rounded bg-blue-600 text-white" onClick={() => router.push(`/test/${String(id)}`)}>Go to Test</button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <XCircle className="h-10 w-10 text-red-400 mb-4" />
+        <div className="text-red-700 font-medium text-lg mb-6">No submission found</div>
+        {/* Skeleton loader for no submission */}
+        <div className="w-full max-w-2xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
+            <div className="h-32 bg-gray-200 rounded" />
+            <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
           </div>
+        </div>
+        <div className="mt-4">
+          <button className="px-4 py-2 rounded bg-blue-600 text-white" onClick={() => router.push(`/test/${String(id)}`)}>Go to Test</button>
         </div>
       </div>
     )
@@ -97,6 +105,8 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Confetti celebration when result is loaded */}
+      <Confetti numberOfPieces={120} recycle={false} width={typeof window !== 'undefined' ? window.innerWidth : 800} height={typeof window !== 'undefined' ? window.innerHeight : 600} />
       <div className="max-w-3xl mx-auto px-2 md:px-0">
         {/* Top summary */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
