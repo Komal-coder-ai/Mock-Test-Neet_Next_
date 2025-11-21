@@ -1,8 +1,14 @@
-http://localhost:3000/api/papers
-category: "NEET"
-date: "2025-11-26"durationMinutes
-: 180title: 
-"JEE Main 2026 - Full Mock Test 1"
-totalQuestions
-: 
-4
+paper add ,delete  
+http://localhost:3000/api/papers/69206d5d52b292c85c03aac6/questions
+
+{
+  "questions": [
+    {
+      "text": "Which law states that energy cannot be created or destroyed?",
+      "options": ["Law of Conservation of Energy", "Boyle's Law", "Ohm's Law", "Newton's Law"],
+      "correctIndex": 0,
+      "subject": "Physics"
+    },
+  ],
+}
+
