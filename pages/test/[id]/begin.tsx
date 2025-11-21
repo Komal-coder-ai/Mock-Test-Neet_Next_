@@ -31,80 +31,14 @@ type Paper = {
 };
 
 export default function TestRunner() {
-  const [remaining, setRemaining] = useState<number>(0);
+  const [remaining, setRemaining] = useState<number>(1);
   const router = useRouter();
   const { id, phone } = router.query;
+  console.log(remaining, "remainingremaining");
+
   useEffect(() => {
-    if (remaining === 0 && !submitting && !showSubmitModal) {
-      (async () => {
-        setSubmitting(true);
-        try {
-          const answersMap: Record<string, number> = {};
-          for (let i = 0; i < questions.length; i++) {
-            const q = questions[i] as any;
-            const qid =
-              q && (q as any)._id ? String((q as any)._id) : String(i);
-            if (selectedAnswers[i] !== undefined)
-              answersMap[qid] = selectedAnswers[i];
-          }
-          let userPhone: string | null = null;
-          try {
-            if (phone && typeof phone === "string") userPhone = phone;
-            else {
-              const stored =
-                localStorage.getItem("userPhone") ||
-                localStorage.getItem("user");
-              if (stored) {
-                try {
-                  const parsed = JSON.parse(stored);
-                  userPhone =
-                    parsed?.phone || parsed?.userPhone || String(parsed);
-                } catch {
-                  userPhone = String(stored);
-                }
-              }
-            }
-          } catch (e) {
-            console.warn("Error reading user phone from storage", e);
-          }
-          const resp = await fetch(`/api/papers/${String(id)}/submit`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              answers: answersMap,
-              answersByIndex: selectedAnswers,
-              save: !!userPhone,
-              userPhone: userPhone || undefined,
-              paperTitle: paper?.title || undefined,
-            }),
-          });
-          const data = await resp.json();
-          if (resp.ok && data?.ok) {
-            try {
-              const payload = {
-                result: data.result,
-                answers: answersMap,
-                paperId: String(id),
-                timestamp: Date.now(),
-              };
-              localStorage.setItem(
-                `lastSubmission_${String(id)}`,
-                JSON.stringify(payload)
-              );
-            } catch (e) {
-              console.warn("Failed to save submission locally", e);
-            }
-            // router.push(`/test/${String(id)}/result`);
-          } else {
-            alert(data?.error || "Failed to submit");
-          }
-        } catch (e) {
-          console.error(e);
-          alert("Network error");
-        } finally {
-          setSubmitting(false);
-        }
-      })();
+    if (remaining === 0) {
+      onSubmitConfirm();
     }
   }, [remaining]);
   const [paper, setPaper] = useState<Paper | null>(null);
@@ -251,19 +185,16 @@ export default function TestRunner() {
     const list = filteredIndicesForSubject(activeSubject);
     if (list.length === 0) return;
     const pos = list.indexOf(currentIndex);
-    
-    // If we're on the last question in the filtered list
+
     if (pos >= 0 && pos === list.length - 1) {
-      // Check if this is the actual last question of the entire test (not just filtered)
       const isActualLastQuestion = currentIndex === total - 1;
-      
+
       if (isActualLastQuestion) {
-        // Auto-submit when on the very last question
         setShowSubmitModal(true);
         return;
       }
-    } 
-    
+    }
+
     const next = pos >= 0 && pos < list.length - 1 ? list[pos + 1] : list[0];
     setCurrentIndex(next);
   }
@@ -272,17 +203,88 @@ export default function TestRunner() {
     const list = filteredIndicesForSubject(activeSubject);
     if (list.length === 0) return;
     const pos = list.indexOf(currentIndex);
-    
-    // Only go to previous question if not on the first question
+
     if (pos > 0) {
       const prev = list[pos - 1];
       setCurrentIndex(prev);
     }
-    // If on first question (pos === 0), do nothing - don't cycle to last
   }
 
   const currentQ = questions[currentIndex];
-  const isLowTime = remaining < 300; // less than 5 minutes
+  const isLowTime = remaining < 300;
+
+  const onSubmitConfirm = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const answersMap: Record<string, number> = {};
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i] as any;
+        const qid = q && (q as any)._id ? String((q as any)._id) : String(i);
+        if (selectedAnswers[i] !== undefined)
+          answersMap[qid] = selectedAnswers[i];
+      }
+
+      let userPhone: string | null = null;
+      try {
+        if (phone && typeof phone === "string") userPhone = phone;
+        else {
+          const stored =
+            localStorage.getItem("userPhone") || localStorage.getItem("user");
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              userPhone = parsed?.phone || parsed?.userPhone || String(parsed);
+            } catch {
+              userPhone = String(stored);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Error reading user phone from storage", e);
+      }
+
+      const resp = await fetch(`/api/papers/${String(id)}/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          answers: answersMap,
+          answersByIndex: selectedAnswers,
+          save: !!userPhone,
+          userPhone: userPhone || undefined,
+          paperTitle: paper?.title || undefined,
+        }),
+      });
+      const data = await resp.json();
+      if (resp.ok && data?.ok) {
+        try {
+          const payload = {
+            result: data.result,
+            answers: answersMap,
+            paperId: String(id),
+            timestamp: Date.now(),
+          };
+          localStorage.setItem(
+            `lastSubmission_${String(id)}`,
+            JSON.stringify(payload)
+          );
+        } catch (e) {
+          console.warn("Failed to save submission locally", e);
+        }
+        setShowSubmitModal(false);
+        router.push(`/test/${String(id)}/result`);
+      } else {
+        alert(data?.error || "Failed to submit");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Network error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -511,8 +513,8 @@ export default function TestRunner() {
                       onClick={prevQuestion}
                       disabled={currentIndex === 0}
                       className={`flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-lg font-medium transition-colors ${
-                        currentIndex === 0 
-                          ? "opacity-50 cursor-not-allowed text-gray-400" 
+                        currentIndex === 0
+                          ? "opacity-50 cursor-not-allowed text-gray-400"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                       whileHover={currentIndex === 0 ? {} : { scale: 1.02 }}
@@ -737,96 +739,7 @@ export default function TestRunner() {
                         <button
                           disabled={submitting}
                           className="px-6 py-2 rounded-full bg-blue-600 text-white"
-                          onClick={async () => {
-                            if (submitting) return;
-                            setSubmitting(true);
-                            try {
-                              const answersMap: Record<string, number> = {};
-                              for (let i = 0; i < questions.length; i++) {
-                                const q = questions[i] as any;
-                                const qid =
-                                  q && (q as any)._id
-                                    ? String((q as any)._id)
-                                    : String(i);
-                                if (selectedAnswers[i] !== undefined)
-                                  answersMap[qid] = selectedAnswers[i];
-                              }
-                              // include both answers keyed by qid and by index (fallback)
-                              // determine userPhone: prefer query param, fallback to localStorage
-                              let userPhone: string | null = null;
-                              try {
-                                if (phone && typeof phone === "string")
-                                  userPhone = phone;
-                                else {
-                                  const stored =
-                                    localStorage.getItem("userPhone") ||
-                                    localStorage.getItem("user");
-                                  if (stored) {
-                                    try {
-                                      const parsed = JSON.parse(stored);
-                                      userPhone =
-                                        parsed?.phone ||
-                                        parsed?.userPhone ||
-                                        String(parsed);
-                                    } catch {
-                                      userPhone = String(stored);
-                                    }
-                                  }
-                                }
-                              } catch (e) {
-                                console.warn(
-                                  "Error reading user phone from storage",
-                                  e
-                                );
-                              }
-
-                              const resp = await fetch(
-                                `/api/papers/${String(id)}/submit`,
-                                {
-                                  method: "POST",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                  },
-                                  body: JSON.stringify({
-                                    answers: answersMap,
-                                    answersByIndex: selectedAnswers,
-                                    save: !!userPhone,
-                                    userPhone: userPhone || undefined,
-                                    paperTitle: paper?.title || undefined,
-                                  }),
-                                }
-                              );
-                              const data = await resp.json();
-                              if (resp.ok && data?.ok) {
-                                try {
-                                  const payload = {
-                                    result: data.result,
-                                    answers: answersMap,
-                                    paperId: String(id),
-                                    timestamp: Date.now(),
-                                  };
-                                  localStorage.setItem(
-                                    `lastSubmission_${String(id)}`,
-                                    JSON.stringify(payload)
-                                  );
-                                } catch (e) {
-                                  console.warn(
-                                    "Failed to save submission locally",
-                                    e
-                                  );
-                                }
-                                setShowSubmitModal(false);
-                                router.push(`/test/${String(id)}/result`);
-                              } else {
-                                alert(data?.error || "Failed to submit");
-                              }
-                            } catch (e) {
-                              console.error(e);
-                              alert("Network error");
-                            } finally {
-                              setSubmitting(false);
-                            }
-                          }}
+                          onClick={() => onSubmitConfirm()}
                         >
                           {submitting ? "Submitting..." : "Submit Test"}
                         </button>
