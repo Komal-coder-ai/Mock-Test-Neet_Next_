@@ -309,9 +309,7 @@ const Footer = () => (
         >
           Official Website
         </a>
-          {!(typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname.startsWith('/login'))) && (
-            <a href="/terms" className="text-indigo-600 hover:underline text-xs sm:text-sm">Terms</a>
-          )}
+         
       </div>
     </div>
   </footer>
