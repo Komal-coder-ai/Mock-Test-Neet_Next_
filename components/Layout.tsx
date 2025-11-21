@@ -25,58 +25,52 @@ const Navbar = ({ user }: { user?: any }) => {
 
   const isHomePage = router.pathname === '/';
   return (
-    <nav className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} relative`}>
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 flex items-center justify-between">
+    <nav className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50`} style={{boxShadow: '0 2px 8px rgba(44,62,80,0.08)'}}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div
-          className="flex items-center gap-2 sm:gap-3 cursor-pointer"
+          className="flex items-center gap-3 cursor-pointer group"
           onClick={() => {
             const phone = localStorage.getItem("userPhone") || "";
             router.push(`/`);
           }}
         >
           <div
-            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${COLORS.logoBg} flex items-center justify-center shadow-md`}
+            className={`w-12 h-12 rounded-xl ${COLORS.logoBg} flex items-center justify-center shadow-lg border border-blue-200 group-hover:scale-110 transition-transform duration-200`}
           >
-            <BookOpen size={20} className={`${COLORS.logoText} sm:w-6 sm:h-6`} />
+            <BookOpen size={28} className={`${COLORS.logoText} sm:w-8 sm:h-8`} />
           </div>
-          <div>
-            <div className={`font-extrabold text-base sm:text-lg md:text-xl ${COLORS.navText}`}>
-              HPBOSE
-            </div>
-            <div
-              className={`text-[10px] sm:text-xs ${COLORS.navAccent} font-semibold tracking-wide`}
-            >
-              NEET & JEE Preparation
-            </div>
+          <div className="ml-3">
+            <div className={`font-extrabold text-xl md:text-2xl tracking-tight ${COLORS.navText} drop-shadow-sm`}>HPBOSE</div>
+            <div className={`text-sm md:text-base ${COLORS.navAccent} font-semibold tracking-wide leading-tight`}>NEET & JEE Preparation</div>
           </div>
         </div>
 
         {/* Desktop Navigation */}
         {!isAuthPage ? (
-          <div className="hidden md:flex items-center gap-4 lg:gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-10">
             <button
-              className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
               onClick={() => {
                 router.push(`/dashboard`);
               }}
             >
-              <HomeIcon size={18} />
+              <HomeIcon size={20} />
               <span className="hidden lg:inline">Home</span>
             </button>
             <button
-              className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
               onClick={() => {
                 const phone = localStorage.getItem("userPhone") || "";
                 router.push(`/test/history?phone=${encodeURIComponent(phone)}`);
               }}
             >
-              <Activity size={18} />
+              <Activity size={20} />
               <span className="hidden lg:inline">Test History</span>
             </button>
            
             <button
-              className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
               onClick={() => {
                 const userId =
                   localStorage.getItem("userId") ||
@@ -88,26 +82,26 @@ const Navbar = ({ user }: { user?: any }) => {
                 }
               }}
             >
-              <User size={18} />
+              <User size={20} />
               <span className="hidden lg:inline">Profile</span>
             </button>
             <Link
               href="/terms"
-              className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors`}
+              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150`}
             >
-              <ScrollText size={18} />
+              <ScrollText size={20} />
               <span className="hidden lg:inline">Terms</span>
             </Link>
             
             {/* Show Login button on home page */}
             {isHomePage && (
               <button
-                className={`flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+                className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
                 onClick={() => {
                   router.push(`/login`);
                 }}
               >
-                <LogIn size={18} />
+                <LogIn size={20} />
                 <span className="hidden lg:inline">Login</span>
               </button>
             )}
@@ -257,21 +251,22 @@ const Navbar = ({ user }: { user?: any }) => {
 };
 
 const Footer = () => (
-  <footer className="mt-8 sm:mt-12 md:mt-16 py-6 sm:py-8 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs sm:text-sm text-gray-700">
-      <div className="mb-2 sm:mb-3 font-semibold text-sm sm:text-base text-blue-700">
-        HPBOSE - NEET & JEE Preparation
+    <footer className=" py-8 sm:py-10 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col items-center text-center">
+        <div className="mb-2 sm:mb-3 font-bold text-base sm:text-lg text-blue-700 tracking-tight flex items-center gap-2">
+          <BookOpen size={18} className="text-blue-600" />
+          HPBOSE <span className="text-indigo-600">|</span> <span className="text-indigo-700">NEET & JEE Preparation</span>
+        </div>
+        <p className="mb-2 sm:mb-3 text-xs sm:text-sm text-gray-600">© 2024 HPBOSE. All rights reserved.</p>
+        <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 max-w-xl">
+          India's #1 platform for NEET & JEE mock tests, analytics, and smart preparation.
+        </div>
+        <div className="mt-3 flex gap-4">
+          <a href="https://www.hpbose.org/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs sm:text-sm">Official Website</a>
+          <a href="/terms" className="text-indigo-600 hover:underline text-xs sm:text-sm">Terms</a>
+        </div>
       </div>
-      <p className="mb-3 sm:mb-4 text-xs sm:text-sm">© 2024 HPBOSE. All rights reserved.</p>
-     
-      <div className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-gray-500 px-4">
-        <span>
-          India's #1 platform for NEET & JEE mock tests, analytics, and smart
-          preparation.
-        </span>
-      </div>
-    </div>
-  </footer>
+    </footer>
 );
 
 const Layout = ({
@@ -281,9 +276,9 @@ const Layout = ({
   children: React.ReactNode;
   user?: any;
 }) => (
-  <div className="min-h-screen bg-gray-50 flex flex-col">
+  <div className=" bg-gray-50 flex flex-col">
     <Navbar user={user} />
-    <main className="w-full  mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 flex-1">{children}</main>
+    <main className="w-full ">{children}</main>
     <Footer />
   </div>
 );
