@@ -133,7 +133,7 @@ export default function LoginPage() {
       title: "Track Progress",
       desc: "All your test history and analytics in one place",
     },
-  ];
+  ]; 
 
   return (
     <div className="min-h-screen lg:flex bg-gray-50">

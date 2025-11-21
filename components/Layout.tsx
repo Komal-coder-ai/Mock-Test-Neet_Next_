@@ -34,11 +34,17 @@ const Navbar = ({ user }: { user?: any }) => {
     router.pathname === "/register/index";
 
   const isHomePage = router.pathname === "/";
-  return (
-    <nav
-      className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50`}
-      style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
-    >
+    return (
+      <nav
+        className={`relative ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50 overflow-hidden`}
+        style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
+      >
+        {/* Decorative Circles Background */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-[-60px] left-[-80px] w-[220px] h-[220px] bg-gradient-to-br from-blue-700 to-indigo-700 rounded-full opacity-30 blur-2xl" />
+          <div className="absolute top-[40px] right-[-100px] w-[180px] h-[180px] bg-gradient-to-br from-indigo-500 to-blue-400 rounded-full opacity-20 blur-2xl" />
+          <div className="absolute bottom-[-80px] left-[40%] w-[140px] h-[140px] bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full opacity-20 blur-2xl" />
+        </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div
@@ -58,12 +64,12 @@ const Navbar = ({ user }: { user?: any }) => {
           </div>
           <div className="ml-3">
             <div
-              className={`font-extrabold text-xl md:text-2xl tracking-tight ${COLORS.navText} drop-shadow-sm`}
+              className={`font-extrabold text-xl md:text-2xl tracking-tight text-blue-700 drop-shadow-sm`}
             >
               HPBOSE
             </div>
             <div
-              className={`text-sm md:text-base ${COLORS.navAccent} font-semibold tracking-wide leading-tight`}
+              className={`text-sm md:text-base text-green-500 font-semibold tracking-wide leading-tight`}
             >
               NEET & JEE Preparation
             </div>
@@ -74,7 +80,7 @@ const Navbar = ({ user }: { user?: any }) => {
         {!isAuthPage ? (
           <div className="hidden md:flex items-center gap-6 lg:gap-10">
             <button
-              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
               onClick={() => {
                 router.push(`/dashboard`);
               }}
@@ -83,7 +89,7 @@ const Navbar = ({ user }: { user?: any }) => {
               <span className="hidden lg:inline">Home</span>
             </button>
             <button
-              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
               onClick={() => {
                 router.push(`/test/history`);
               }}
@@ -93,7 +99,7 @@ const Navbar = ({ user }: { user?: any }) => {
             </button>
 
             <button
-              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
+              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
               onClick={() => {
                 const userId =
                   localStorage.getItem("userId") ||
@@ -102,7 +108,7 @@ const Navbar = ({ user }: { user?: any }) => {
                   router.push("/profile");
                 } else {
                   router.push("/login");
-                }
+                } 
               }}
             >
               <User size={20} />
@@ -111,7 +117,7 @@ const Navbar = ({ user }: { user?: any }) => {
             {!(isHomePage || router.pathname.startsWith('/login')) && (
               <Link
                 href="/terms"
-                className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150`}
+                className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 drop-shadow-sm`}
               >
                 <ScrollText size={20} />
                 <span className="hidden lg:inline">Terms</span>
@@ -121,7 +127,7 @@ const Navbar = ({ user }: { user?: any }) => {
             {/* Show Login button on home page */}
             {isHomePage && (
               <button
-                className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
+                className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
                 onClick={() => {
                   router.push(`/login`);
                 }}
@@ -133,7 +139,7 @@ const Navbar = ({ user }: { user?: any }) => {
           </div>
         ) : (
           <button
-            className={`hidden md:flex items-center gap-2 text-sm lg:text-base font-medium ${COLORS.navText} hover:${COLORS.navAccent} transition-colors bg-transparent border-none cursor-pointer`}
+            className={`hidden md:flex items-center gap-2 text-sm lg:text-base font-bold text-blue-600 hover:text-green-500 transition-colors bg-transparent border-none cursor-pointer drop-shadow-sm`}
             onClick={() => {
               router.push(`/login`);
             }}
@@ -145,7 +151,7 @@ const Navbar = ({ user }: { user?: any }) => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+          className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-blue-600 drop-shadow-sm"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -186,7 +192,7 @@ const Navbar = ({ user }: { user?: any }) => {
             {!isAuthPage ? (
               <>
                 <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                   onClick={() => {
                     router.push(`/dashboard`);
                     setMobileMenuOpen(false);
@@ -196,7 +202,7 @@ const Navbar = ({ user }: { user?: any }) => {
                   Home
                 </button>
                 <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                   onClick={() => {
                     const phone = localStorage.getItem("userPhone") || "";
                     router.push(
@@ -209,7 +215,7 @@ const Navbar = ({ user }: { user?: any }) => {
                   Test History
                 </button>
                 <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                   onClick={() => {
                     const userId =
                       localStorage.getItem("userId") ||
@@ -229,7 +235,7 @@ const Navbar = ({ user }: { user?: any }) => {
                 </button>
                 <Link
                   href="/terms"
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors drop-shadow-sm`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <ScrollText size={18} />
@@ -239,7 +245,7 @@ const Navbar = ({ user }: { user?: any }) => {
                 {/* Show Login button on home page in mobile menu */}
                 {isHomePage && (
                   <button
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                     onClick={() => {
                       router.push(`/login`);
                       setMobileMenuOpen(false);
@@ -252,7 +258,7 @@ const Navbar = ({ user }: { user?: any }) => {
               </>
             ) : (
               <button
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                 onClick={() => {
                   router.push(`/login`);
                   setMobileMenuOpen(false);
