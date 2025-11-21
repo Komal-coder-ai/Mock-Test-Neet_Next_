@@ -225,7 +225,11 @@ export default function Dashboard() {
                     </div>
 
                     <motion.button
-                      className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all text-sm sm:text-base whitespace-nowrap"
+                      className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap 
+                        ${category === "NEET" 
+                          ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700" 
+                          : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"}
+                      `}
                       onClick={() =>
                         router.push(
                           `/test/${p._id}?phone=${encodeURIComponent(phone)}`

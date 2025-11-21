@@ -23,7 +23,7 @@ export default function Home() {
       const phone = localStorage.getItem('userPhone');
       const userId = localStorage.getItem('userId');
       if (token || phone || userId) {
-        router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`);
+        router.replace(`/dashboard`);
       }
     } catch (e) {}
   }, []);

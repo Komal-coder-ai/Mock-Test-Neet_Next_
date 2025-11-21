@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BookOpen, Activity, User, ScrollText, LogIn, HomeIcon } from "lucide-react";
+import {
+  BookOpen,
+  Activity,
+  User,
+  ScrollText,
+  LogIn,
+  HomeIcon,
+} from "lucide-react";
 import { useState } from "react";
 const COLORS = {
   navBg: "bg-gradient-to-r from-blue-700 to-indigo-700",
@@ -18,14 +25,20 @@ const Navbar = ({ user }: { user?: any }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const router = useRouter();
-  
 
-  const isAuthPage = router.pathname === '/'||router.pathname === '/login' || router.pathname === '/register' || router.pathname === '/login/index' || router.pathname === '/register/index';
-  
+  const isAuthPage =
+    router.pathname === "/" ||
+    router.pathname === "/login" ||
+    router.pathname === "/register" ||
+    router.pathname === "/login/index" ||
+    router.pathname === "/register/index";
 
-  const isHomePage = router.pathname === '/';
+  const isHomePage = router.pathname === "/";
   return (
-    <nav className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50`} style={{boxShadow: '0 2px 8px rgba(44,62,80,0.08)'}}>
+    <nav
+      className={`${COLORS.navBg} ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50`}
+      style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div
@@ -38,11 +51,22 @@ const Navbar = ({ user }: { user?: any }) => {
           <div
             className={`w-12 h-12 rounded-xl ${COLORS.logoBg} flex items-center justify-center shadow-lg border border-blue-200 group-hover:scale-110 transition-transform duration-200`}
           >
-            <BookOpen size={28} className={`${COLORS.logoText} sm:w-8 sm:h-8`} />
+            <BookOpen
+              size={28}
+              className={`${COLORS.logoText} sm:w-8 sm:h-8`}
+            />
           </div>
           <div className="ml-3">
-            <div className={`font-extrabold text-xl md:text-2xl tracking-tight ${COLORS.navText} drop-shadow-sm`}>HPBOSE</div>
-            <div className={`text-sm md:text-base ${COLORS.navAccent} font-semibold tracking-wide leading-tight`}>NEET & JEE Preparation</div>
+            <div
+              className={`font-extrabold text-xl md:text-2xl tracking-tight ${COLORS.navText} drop-shadow-sm`}
+            >
+              HPBOSE
+            </div>
+            <div
+              className={`text-sm md:text-base ${COLORS.navAccent} font-semibold tracking-wide leading-tight`}
+            >
+              NEET & JEE Preparation
+            </div>
           </div>
         </div>
 
@@ -61,14 +85,13 @@ const Navbar = ({ user }: { user?: any }) => {
             <button
               className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
               onClick={() => {
-                const phone = localStorage.getItem("userPhone") || "";
-                router.push(`/test/history?phone=${encodeURIComponent(phone)}`);
+                router.push(`/test/history`);
               }}
             >
               <Activity size={20} />
               <span className="hidden lg:inline">Test History</span>
             </button>
-           
+
             <button
               className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer`}
               onClick={() => {
@@ -78,21 +101,23 @@ const Navbar = ({ user }: { user?: any }) => {
                 if (userId) {
                   router.push("/profile");
                 } else {
-                  alert("Please login or verify OTP to access your profile.");
+                  router.push("/login");
                 }
               }}
             >
               <User size={20} />
               <span className="hidden lg:inline">Profile</span>
             </button>
-            <Link
-              href="/terms"
-              className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150`}
-            >
-              <ScrollText size={20} />
-              <span className="hidden lg:inline">Terms</span>
-            </Link>
-            
+            {!(isHomePage || router.pathname.startsWith('/login')) && (
+              <Link
+                href="/terms"
+                className={`flex items-center gap-2 text-base font-semibold ${COLORS.navText} hover:bg-white/10 hover:text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-150`}
+              >
+                <ScrollText size={20} />
+                <span className="hidden lg:inline">Terms</span>
+              </Link>
+            )}
+
             {/* Show Login button on home page */}
             {isHomePage && (
               <button
@@ -174,7 +199,9 @@ const Navbar = ({ user }: { user?: any }) => {
                   className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium ${COLORS.navText} hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left`}
                   onClick={() => {
                     const phone = localStorage.getItem("userPhone") || "";
-                    router.push(`/test/history?phone=${encodeURIComponent(phone)}`);
+                    router.push(
+                      `/test/history?phone=${encodeURIComponent(phone)}`
+                    );
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -191,7 +218,9 @@ const Navbar = ({ user }: { user?: any }) => {
                       router.push("/profile");
                       setMobileMenuOpen(false);
                     } else {
-                      alert("Please login or verify OTP to access your profile.");
+                      alert(
+                        "Please login or verify OTP to access your profile."
+                      );
                     }
                   }}
                 >
@@ -206,7 +235,7 @@ const Navbar = ({ user }: { user?: any }) => {
                   <ScrollText size={18} />
                   Terms
                 </Link>
-                
+
                 {/* Show Login button on home page in mobile menu */}
                 {isHomePage && (
                   <button
@@ -251,22 +280,35 @@ const Navbar = ({ user }: { user?: any }) => {
 };
 
 const Footer = () => (
-    <footer className=" py-8 sm:py-10 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col items-center text-center">
-        <div className="mb-2 sm:mb-3 font-bold text-base sm:text-lg text-blue-700 tracking-tight flex items-center gap-2">
-          <BookOpen size={18} className="text-blue-600" />
-          HPBOSE <span className="text-indigo-600">|</span> <span className="text-indigo-700">NEET & JEE Preparation</span>
-        </div>
-        <p className="mb-2 sm:mb-3 text-xs sm:text-sm text-gray-600">© 2024 HPBOSE. All rights reserved.</p>
-        <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 max-w-xl">
-          India's #1 platform for NEET & JEE mock tests, analytics, and smart preparation.
-        </div>
-        <div className="mt-3 flex gap-4">
-          <a href="https://www.hpbose.org/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs sm:text-sm">Official Website</a>
-          <a href="/terms" className="text-indigo-600 hover:underline text-xs sm:text-sm">Terms</a>
-        </div>
+  <footer className=" py-8 sm:py-10 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col items-center text-center">
+      <div className="mb-2 sm:mb-3 font-bold text-base sm:text-lg text-blue-700 tracking-tight flex items-center gap-2">
+        <BookOpen size={18} className="text-blue-600" />
+        HPBOSE <span className="text-indigo-600">|</span>{" "}
+        <span className="text-indigo-700">NEET & JEE Preparation</span>
       </div>
-    </footer>
+      <p className="mb-2 sm:mb-3 text-xs sm:text-sm text-gray-600">
+        © 2024 HPBOSE. All rights reserved.
+      </p>
+      <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 max-w-xl">
+        India's #1 platform for NEET & JEE mock tests, analytics, and smart
+        preparation.
+      </div>
+      <div className="mt-3 flex gap-4">
+        <a
+          href="https://www.hpbose.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline text-xs sm:text-sm"
+        >
+          Official Website
+        </a>
+          {!(typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname.startsWith('/login'))) && (
+            <a href="/terms" className="text-indigo-600 hover:underline text-xs sm:text-sm">Terms</a>
+          )}
+      </div>
+    </div>
+  </footer>
 );
 
 const Layout = ({

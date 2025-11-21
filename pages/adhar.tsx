@@ -27,7 +27,7 @@ export default function AadharPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        router.push(`/dashboard?phone=${encodeURIComponent(phone)}`)
+        router.push(`/dashboard`)
       } else {
         alert(data?.error || 'Failed to save aadhar')
       }

@@ -102,10 +102,7 @@ export default function LoginPage() {
       const phone = localStorage.getItem('userPhone')
       const userId = localStorage.getItem('userId')
       const role = localStorage.getItem('userRole')
-      if (token || phone || userId) {
-        if (role === 'admin') router.replace('/admin/dashboard')
-        else router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`)
-      }
+      
     } catch (e) {}
   }, [])
   const [step, setStep] = useState<"request" | "verify">("request");

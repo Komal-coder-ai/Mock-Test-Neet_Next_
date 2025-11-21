@@ -9,19 +9,7 @@ import Toast from '../../components/Toast'
 export default function RegisterPage() {
   const router = useRouter()
   // redirect if already logged in
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem('accessToken')
-      const phone = localStorage.getItem('userPhone')
-      const userId = localStorage.getItem('userId')
-      const role = localStorage.getItem('userRole')
-      if (token || phone || userId) {
-        if (role === 'admin') router.replace('/admin/dashboard')
-        else if (userId) router.replace('/profile');
-        else router.replace(`/dashboard?phone=${encodeURIComponent(phone || '')}`)
-      }
-    } catch (e) {}
-  }, [])
+
   const [toast, setToast] = useState<{ msg: string; type?: 'success' | 'error' } | null>(null)
 
   const features = [
