@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
+import { authApi } from '../../lib/authApi';
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { FileText, Clock, Users, Award, AlertCircle, CheckCircle, XCircle, ArrowLeft, Play } from "lucide-react";
 
 // API Function
 const fetchPaperDetails = async (id: string) => {
-  const res = await fetch(`/api/papers/${id}`);
-  const data = await res.json();
-  return { res, data };
+  const data = await authApi({ url: `/api/papers/${id}` });
+  return { data };
 };
 
 type Paper = {
@@ -29,8 +29,8 @@ export default function TestDetails() {
     setLoading(true);
     
     fetchPaperDetails(String(id))
-      .then(({ res, data }) => {
-        if (res.ok && data?.ok) setPaper(data.paper);
+      .then(({ data }) => {
+        if (data?.ok) setPaper(data.paper);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

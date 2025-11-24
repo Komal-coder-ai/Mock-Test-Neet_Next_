@@ -1,10 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 
+import { NextApiRequest, NextApiResponse } from 'next';
 import Profile from '../../models/Profile';
 import { connectToDatabase } from '../../lib/mongoose';
+import { authenticateApi } from '../../lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-      await connectToDatabase()
+  const user = authenticateApi(req, res);
+  if (!user) return;
+  await connectToDatabase()
 
   if (req.method === 'GET') {
     const { userId } = req.query;
@@ -23,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!fullName || !userClass || !dateOfBirth || !aadharNumber || !userId) {
       return res.status(400).json({ ok: false, error: 'Missing fields' });
     }
-    try {
+    try { 
       const profile = await Profile.findOneAndUpdate(
         { userId },
         { fullName, class: userClass, dateOfBirth, aadharNumber },

@@ -23,6 +23,7 @@ const COLORS = {
 const Navbar = ({ user }: { user?: any }) => {
   console.log(user, "useruser");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  console.log(mobileMenuOpen, "mobileMenuOpen");
 
   const router = useRouter();
 
@@ -34,17 +35,109 @@ const Navbar = ({ user }: { user?: any }) => {
     router.pathname === "/register/index";
 
   const isHomePage = router.pathname === "/";
-    return (
-      <nav
-        className={`relative ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50 overflow-hidden`}
-        style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
-      >
-        {/* Decorative Circles Background */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-[-60px] left-[-80px] w-[220px] h-[220px] bg-gradient-to-br from-blue-700 to-indigo-700 rounded-full opacity-30 blur-2xl" />
-          <div className="absolute top-[40px] right-[-100px] w-[180px] h-[180px] bg-gradient-to-br from-indigo-500 to-blue-400 rounded-full opacity-20 blur-2xl" />
-          <div className="absolute bottom-[-80px] left-[40%] w-[140px] h-[140px] bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full opacity-20 blur-2xl" />
-        </div>
+
+  // Define navigation links as objects
+  const navLinks = [
+    { 
+      label: "Home",
+      icon: <HomeIcon size={20} />,
+      onClick: () => router.push(`/dashboard`),
+      show: !isAuthPage,
+      desktop: true,
+      mobile: true,
+      color: "text-blue-600",
+    },
+    {
+      label: "Test History",
+      icon: <Activity size={20} />,
+      onClick: () => router.push(`/test/history`),
+      show: !isAuthPage,
+      desktop: true,
+      mobile: true,
+      color: "text-blue-600",
+    },
+    {
+      label: "Profile",
+      icon: <User size={20} />,
+      onClick: () => {
+        const userId = localStorage.getItem("userId") || localStorage.getItem("user");
+        if (userId) {
+          router.push("/profile");
+        } else {
+          router.push("/login");
+        }
+      },
+      show: !isAuthPage,
+      desktop: true,
+      mobile: true,
+      color: "text-blue-600",
+    },
+    {
+      label: "Terms",
+      icon: <ScrollText size={20} />,
+      onClick: () => router.push(`/terms`),
+      show: !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
+      desktop: true,
+      mobile: true,
+      color: "text-blue-600",
+      isLink: true,
+      href: "/terms",
+    },
+    {
+      label: "Login",
+      icon: <LogIn size={20} />,
+      onClick: () => router.push(`/login`),
+      show: isHomePage,
+      desktop: true,
+      mobile: true,
+      color: "text-blue-600",
+    },
+    {
+      label: "Logout",
+      icon: <LogIn size={20} />,
+      onClick: async () => {
+        if (typeof window !== "undefined") {
+          // Dynamically import SweetAlert2
+          const Swal = (await import("sweetalert2")).default;
+          Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, logout!",
+          }).then((result: any) => {
+            if (result.isConfirmed) {
+              localStorage.clear();
+              router.push("/login");
+            }
+          });
+        }
+      },
+      show: !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
+      desktop: true,
+      mobile: true,
+      color: "text-red-600",
+      isLink: false,
+    },
+  ];
+
+
+  return (
+    <nav
+      className={`
+        relative ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50 overflow-hidden
+        
+        `}
+      style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
+    >
+      {/* Decorative Circles Background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-[-60px] left-[-80px] w-[220px] h-[220px] bg-gradient-to-br from-blue-700 to-indigo-700 rounded-full opacity-30 blur-2xl" />
+        <div className="absolute top-[40px] right-[-100px] w-[180px] h-[180px] bg-gradient-to-br from-indigo-500 to-blue-400 rounded-full opacity-20 blur-2xl" />
+        <div className="absolute bottom-[-80px] left-[40%] w-[140px] h-[140px] bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full opacity-20 blur-2xl" />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div
@@ -77,77 +170,31 @@ const Navbar = ({ user }: { user?: any }) => {
         </div>
 
         {/* Desktop Navigation */}
-        {!isAuthPage ? (
-          <div className="hidden md:flex items-center gap-6 lg:gap-10">
-            <button
-              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
-              onClick={() => {
-                router.push(`/dashboard`);
-              }}
-            >
-              <HomeIcon size={20} />
-              <span className="hidden lg:inline">Home</span>
-            </button>
-            <button
-              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
-              onClick={() => {
-                router.push(`/test/history`);
-              }}
-            >
-              <Activity size={20} />
-              <span className="hidden lg:inline">Test History</span>
-            </button>
-
-            <button
-              className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
-              onClick={() => {
-                const userId =
-                  localStorage.getItem("userId") ||
-                  localStorage.getItem("user");
-                if (userId) {
-                  router.push("/profile");
-                } else {
-                  router.push("/login");
-                } 
-              }}
-            >
-              <User size={20} />
-              <span className="hidden lg:inline">Profile</span>
-            </button>
-            {!(isHomePage || router.pathname.startsWith('/login')) && (
-              <Link
-                href="/terms"
-                className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 drop-shadow-sm`}
-              >
-                <ScrollText size={20} />
-                <span className="hidden lg:inline">Terms</span>
-              </Link>
+        <div className="hidden md:flex items-center gap-6 lg:gap-10">
+          {navLinks
+            .filter((link) => link.desktop && link.show)
+            .map((link) =>
+              link.isLink ? (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`flex items-center gap-2 text-base font-bold ${link.color} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 drop-shadow-sm`}
+                >
+                  {link.icon}
+                  <span className="hidden lg:inline">{link.label}</span>
+                </Link>
+              ) : (
+                <button
+                  key={link.label}
+                  className={`flex items-center gap-2 text-base font-bold ${link.color} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
+                  onClick={link.onClick}
+                >
+                  {link.icon}
+                  <span className="hidden lg:inline">{link.label}</span>
+                </button>
+              )
             )}
-
-            {/* Show Login button on home page */}
-            {isHomePage && (
-              <button
-                className={`flex items-center gap-2 text-base font-bold text-blue-600 hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
-                onClick={() => {
-                  router.push(`/login`);
-                }}
-              >
-                <LogIn size={20} />
-                <span className="hidden lg:inline">Login</span>
-              </button>
-            )}
-          </div>
-        ) : (
-          <button
-            className={`hidden md:flex items-center gap-2 text-sm lg:text-base font-bold text-blue-600 hover:text-green-500 transition-colors bg-transparent border-none cursor-pointer drop-shadow-sm`}
-            onClick={() => {
-              router.push(`/login`);
-            }}
-          >
-            <LogIn size={18} />
-            <span className="hidden lg:inline">Login</span>
-          </button>
-        )}
+        </div>
 
         {/* Mobile Menu Button */}
         <button
@@ -156,7 +203,7 @@ const Navbar = ({ user }: { user?: any }) => {
           aria-label="Toggle menu"
         >
           <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+            className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -164,11 +211,20 @@ const Navbar = ({ user }: { user?: any }) => {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            {mobileMenuOpen ? (
-              <path d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            )}
+            <g>
+              {mobileMenuOpen ? (
+                <>
+                  <path d="M6 18L18 6" />
+                  <path d="M6 6l12 12" />
+                </>
+              ) : (
+                <>
+                  <path d="M4 6h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 18h16" />
+                </>
+              )}
+            </g>
           </svg>
         </button>
 
@@ -187,103 +243,42 @@ const Navbar = ({ user }: { user?: any }) => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-gradient-to-r from-blue-700 to-indigo-700 border-t border-indigo-600 shadow-lg z-50">
+        <div className="">
           <div className="px-4 py-3 space-y-2">
-            {!isAuthPage ? (
-              <>
-                <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
-                  onClick={() => {
-                    router.push(`/dashboard`);
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <HomeIcon size={18} />
-                  Home
-                </button>
-                <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
-                  onClick={() => {
-                    const phone = localStorage.getItem("userPhone") || "";
-                    router.push(
-                      `/test/history?phone=${encodeURIComponent(phone)}`
-                    );
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <Activity size={18} />
-                  Test History
-                </button>
-                <button
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
-                  onClick={() => {
-                    const userId =
-                      localStorage.getItem("userId") ||
-                      localStorage.getItem("user");
-                    if (userId) {
-                      router.push("/profile");
-                      setMobileMenuOpen(false);
-                    } else {
-                      alert(
-                        "Please login or verify OTP to access your profile."
-                      );
-                    }
-                  }}
-                >
-                  <User size={18} />
-                  Profile
-                </button>
-                <Link
-                  href="/terms"
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors drop-shadow-sm`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <ScrollText size={18} />
-                  Terms
-                </Link>
-
-                {/* Show Login button on home page in mobile menu */}
-                {isHomePage && (
+            {navLinks
+              .filter((link) => link.mobile && link.show)
+              .map((link) =>
+                link.isLink ? (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${link.color} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors drop-shadow-sm`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.icon}
+                    {link.label}
+                  </Link>
+                ) : (
                   <button
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
+                    key={link.label}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${link.color} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                     onClick={() => {
-                      router.push(`/login`);
+                      link.onClick();
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <LogIn size={18} />
-                    Login
+                    {link.icon}
+                    {link.label}
                   </button>
-                )}
-              </>
-            ) : (
-              <button
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
-                onClick={() => {
-                  router.push(`/login`);
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <LogIn size={18} />
-                Login
-              </button>
-            )}
-            {user && (
-              <div className="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-lg mt-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold">
-                  {user.name?.[0]?.toUpperCase() || "U"}
-                </div>
-                <span className="text-sm font-medium text-white">
-                  {user.name}
-                </span>
-              </div>
-            )}
+                )
+              )}
           </div>
         </div>
       )}
     </nav>
   );
-};
+
+} ;
 
 const Footer = () => (
   <footer className=" py-8 sm:py-10 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
@@ -309,21 +304,14 @@ const Footer = () => (
         >
           Official Website
         </a>
-         
       </div>
     </div>
   </footer>
 );
 
-const Layout = ({
-  children,
-  user,
-}: {
-  children: React.ReactNode;
-  user?: any;
-}) => {
+const Layout = ({ children, user }: { children: React.ReactNode; user?: any }) => {
   const router = useRouter();
-  const isTestBeginPage = router.pathname.startsWith('/test/') && router.pathname.endsWith('/begin');
+  const isTestBeginPage = router.pathname.startsWith("/test/") && router.pathname.endsWith("/begin");
   return (
     <div className="bg-gray-50 flex flex-col">
       {!isTestBeginPage && <Navbar user={user} />}

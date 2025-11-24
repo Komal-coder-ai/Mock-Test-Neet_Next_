@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { authApi } from '../../../lib/authApi'
 import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
 import { CheckCircle2, XCircle } from 'lucide-react'
@@ -18,9 +19,11 @@ export default function ReviewPage() {
       console.warn(e)
     }
 
-    fetch(`/api/papers/${String(id)}`).then((r) => r.json()).then((data) => {
-      if (data?.ok) setPaper(data.paper)
-    }).catch(console.error)
+    authApi({ url: `/api/papers/${String(id)}` })
+      .then((data: any) => {
+        if (data?.ok) setPaper(data.paper)
+      })
+      .catch(console.error)
   }, [id])
 
   if (!submission || !paper) {

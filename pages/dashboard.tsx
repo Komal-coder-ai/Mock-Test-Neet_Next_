@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { authApi } from '../lib/authApi';
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -43,13 +44,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!phone) return;
-    fetch(`/api/user?phone=${encodeURIComponent(phone)}`)
-      .then((r) => r.json())
-      .then((data) => {
+    authApi({ url: `/api/user?phone=${encodeURIComponent(phone)}` })
+      .then((data: any) => {
         if (data?.ok) setUser(data.user);
       });
   }, [phone]);
-
+  
   useEffect(() => {
     fetchPapers();
     setPage(1);
@@ -64,10 +64,9 @@ export default function Dashboard() {
   async function fetchPapers() {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/papers?category=${category}&page=${page}&limit=${limit}`
-      );
-      const data = await res.json();
+      const data = await authApi({
+        url: `/api/papers?category=${category}&page=${page}&limit=${limit}`,
+      });
       if (data?.ok) {
         setPapers(data.papers);
         setTotal(data.total);

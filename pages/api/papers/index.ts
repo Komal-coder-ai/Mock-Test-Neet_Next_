@@ -2,10 +2,13 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from './../../../lib/mongoose'
 import Paper from './../../../models/Paper'
 import User from './../../../models/User'
+import { authenticateApi } from '../../../lib/auth'
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
+  const user = authenticateApi(req, res);
+  if (!user) return;
 
   if (req.method === 'POST') {
     const {
@@ -72,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const total = await Paper.countDocuments(filter)
       const papers = await Paper.find(filter)
         .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
+        .skip((page - 1) * limit) 
         .limit(limit)
 
       return res.status(200).json({ ok: true, papers, total })

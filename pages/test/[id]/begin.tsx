@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,6 +15,7 @@ import {
   Timer,
   FileText,
 } from "lucide-react";
+import { authApi } from "../../../lib/authApi";
 
 type Question = {
   text: string;
@@ -71,9 +73,8 @@ export default function TestRunner() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/papers/${id}`)
-      .then((r) => r.json())
-      .then((data) => {
+    authApi({ url: `/api/papers/${id}` })
+      .then((data: any) => {
         if (data?.ok) {
           setPaper(data.paper);
           setSubjectCounts(data.subjectCounts || {});
@@ -244,21 +245,18 @@ export default function TestRunner() {
         console.warn("Error reading user phone from storage", e);
       }
 
-      const resp = await fetch(`/api/papers/${String(id)}/submit`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const data = await authApi({
+        url: `/api/papers/${String(id)}/submit`,
+        method: 'POST',
+        data: {
           answers: answersMap,
           answersByIndex: selectedAnswers,
           save: !!userPhone,
           userPhone: userPhone || undefined,
           paperTitle: paper?.title || undefined,
-        }),
+        },
       });
-      const data = await resp.json();
-      if (resp.ok && data?.ok) {
+      if (data?.ok) {
         try {
           const payload = {
             result: data.result,

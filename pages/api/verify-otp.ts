@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const jwtRefreshSecret = getSecret('JWT_REFRESH_SECRET', 'dev_refresh_secret_change_me')
 
     const payload = { id: user._id.toString(), phone: user.phone, role: user.role || 'user' }
-    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '15m' })
+    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '1d' })
     const refreshToken = jwt.sign({ id: user._id.toString() }, jwtRefreshSecret, { expiresIn: '7d' })
 
     return res.status(200).json({ ok: true, accessToken, refreshToken, id: user._id, role: user.role || 'user' })

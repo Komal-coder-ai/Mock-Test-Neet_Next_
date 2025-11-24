@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from '../../../lib/mongoose'
 import Result from '../../../models/Result'
+import { authenticateApi } from '../../../lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
-
+  const user = authenticateApi(req, res);
+  if (!user) return;
   if (req.method === 'GET') {
     const { userPhone } = req.query
     if (!userPhone || typeof userPhone !== 'string') return res.status(400).json({ ok: false, error: 'userPhone required' })

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { authApi } from '../../lib/authApi';
 
 export default function AdminDashboard() {
   const [exam, setExam] = useState<"JEE" | "NEET">("JEE");
@@ -86,10 +87,8 @@ export default function AdminDashboard() {
 
   async function fetchPaperDetails(paperId: string) {
     try {
-      const res = await fetch(`/api/papers/${paperId}`);
-      const data = await res.json();
-      if (res.ok && data?.paper) {
-        // use questions as returned by server (may include _id)
+      const data = await authApi({ url: `/api/papers/${paperId}` });
+      if (data?.paper) {
         setPaperQuestions(data.paper.questions || []);
       }
     } catch (err) {
@@ -99,13 +98,10 @@ export default function AdminDashboard() {
 
   async function fetchPapers() {
     try {
-      const res = await fetch("/api/papers?category=all&limit=200");
-      const data = await res.json();
-      if (res.ok) {
-        setPapers(data.papers || []);
-        if ((data.papers || []).length > 0)
-          setSelectedPaper((data.papers || [])[0]._id);
-      }
+      const data = await authApi({ url: "/api/papers?category=all&limit=200" });
+      setPapers(data.papers || []);
+      if ((data.papers || []).length > 0)
+        setSelectedPaper((data.papers || [])[0]._id);
     } catch (err) {
       // ignore
     }
@@ -140,13 +136,12 @@ export default function AdminDashboard() {
     try {
       if (editingPaperId) {
         // update existing paper
-        const res = await fetch(`/api/papers/${editingPaperId}`, {
+        const data = await authApi({
+          url: `/api/papers/${editingPaperId}`,
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...body, title: name, adminPhone }),
+          data: { ...body, title: name, adminPhone },
         });
-        const data = await res.json();
-        if (res.ok) {
+        if (data?.ok) {
           setMessage("Paper updated successfully");
           cancelEditPaper();
           fetchPapers();
@@ -154,13 +149,12 @@ export default function AdminDashboard() {
           setError(data?.error || "Failed to update");
         }
       } else {
-        const res = await fetch("/api/papers", {
+        const data = await authApi({
+          url: "/api/papers",
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+          data: body,
         });
-        const data = await res.json();
-        if (res.ok) {
+        if (data?.ok) {
           setMessage("Paper created successfully");
           setName("");
           fetchPapers();
@@ -202,15 +196,14 @@ export default function AdminDashboard() {
       subject,
       adminPhone,
     };
-
+ 
     try {
-      const res = await fetch(`/api/papers/${selectedPaper}/questions`, {
+      const data = await authApi({
+        url: `/api/papers/${selectedPaper}/questions`,
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        data: body,
       });
-      const data = await res.json();
-      if (res.ok) {
+      if (data?.ok) {
         setQMessage("Question added");
         setQuestionText("");
         setOptions(["", "", "", ""]);
@@ -253,22 +246,18 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const res = await fetch(
-        `/api/papers/${selectedPaper}/questions/${editingId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: editQuestionText,
-            options: editOptions,
-            correctIndex: editCorrectIndex,
-            subject: editSubject,
-            adminPhone,
-          }),
-        }
-      );
-      const data = await res.json();
-      if (res.ok) {
+      const data = await authApi({
+        url: `/api/papers/${selectedPaper}/questions/${editingId}`,
+        method: "PUT",
+        data: {
+          text: editQuestionText,
+          options: editOptions, 
+          correctIndex: editCorrectIndex,
+          subject: editSubject,
+          adminPhone,
+        },
+      });
+      if (data?.ok) {
         setQMessage("Question updated");
         cancelEdit();
         fetchPaperDetails(selectedPaper);
@@ -290,13 +279,12 @@ export default function AdminDashboard() {
     }
     if (!confirm("Delete this question?")) return;
     try {
-      const res = await fetch(`/api/papers/${selectedPaper}/questions/${qid}`, {
+      const data = await authApi({
+        url: `/api/papers/${selectedPaper}/questions/${qid}`,
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminPhone }),
+        data: { adminPhone },
       });
-      const data = await res.json();
-      if (res.ok) {
+      if (data?.ok) {
         setQMessage("Question deleted");
         fetchPaperDetails(selectedPaper);
       } else {

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Formik, Form, Field } from 'formik'
 import ErrorMsg from '../../components/ErrorMsg'
 import Toast from '../../components/Toast'
+import { authApi } from '../../lib/authApi'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -137,7 +138,7 @@ export default function RegisterPage() {
             <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
             <p className="muted mt-2">Register with your phone to get started</p>
           </div>
-
+ 
           <Formik
             initialValues={{ name: '', phone: '' }}
             validate={(vals: any) => {
@@ -152,13 +153,12 @@ export default function RegisterPage() {
               setSubmitting(true)
               try {
                 const phone = String(values.phone).replace(/\D/g, '').slice(0, 10)
-                const res = await fetch('/api/register', {
+                const data = await authApi({
+                  url: '/api/register',
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ name: values.name.trim(), phone })
-                })
-                const data = await res.json()
-                if (res.ok) {
+                  data: { name: values.name.trim(), phone }
+                });
+                if (data?.ok) {
                   setToast({ msg: 'Registration successful! OTP sent to your phone.', type: 'success' })
                   setTimeout(() => router.push('/login'), 1500)
                 } else {

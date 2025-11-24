@@ -96,13 +96,30 @@ function Header() {
   );
 }
 
+
 export default function App({ Component, pageProps }: AppProps) {
   const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
+
   useEffect(() => {
-    const id =
-      typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+    const id = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
     setUserId(id);
-  }, []);
+
+    // Patch global fetch to handle 401
+    if (typeof window !== "undefined") {
+      const originalFetch = window.fetch;
+      window.fetch = async (...args) => {
+        const response = await originalFetch(...args);
+        if (response.status === 401) {
+          try {
+            localStorage.clear();
+          } catch (e) {}
+          router.push("/login");
+        }
+        return response;
+      };
+    } 
+  }, [router]);
 
   const Layout = require("../components/Layout").default;
 
@@ -111,7 +128,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>HPBOSE | NEET &amp; JEE Preparation</title>
         <link rel="icon" href="/favicon.ico" />
-         </Head>
+      </Head>
       <Layout>
         <Component {...pageProps} />
       </Layout>

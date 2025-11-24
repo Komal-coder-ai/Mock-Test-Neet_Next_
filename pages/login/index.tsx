@@ -7,30 +7,29 @@ import ErrorMsg from "../../components/ErrorMsg";
 import Toast from "../../components/Toast";
 
 // API Functions
+import { authApi } from '../../lib/authApi';
 const sendOTP = async (phone: string) => {
-  const res = await fetch("/api/login", {
+  const data = await authApi({
+    url: "/api/login",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone }),
+    data: { phone },
   });
-  const data = await res.json();
-  return { res, data };
+  return { res: { ok: data?.ok }, data };
 };
 
 const verifyOTP = async (phone: string, otp: string) => {
-  const res = await fetch("/api/verify-otp", {
+  const data = await authApi({
+    url: "/api/verify-otp",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, otp }),
+    data: { phone, otp },
   });
-  const data = await res.json();
-  return { res, data };
+  return { res: { ok: data?.ok }, data };
 };
 
 function OTPBoxes({
   value,
   onChange,
-}: {
+}: { 
   value: string;
   onChange: (v: string) => void;
 }) {

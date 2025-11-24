@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { authApi } from '../lib/authApi'
 import { useRouter } from 'next/router'
 
 export default function AadharPage() {
@@ -20,13 +21,12 @@ export default function AadharPage() {
       return
     }
     try {
-      const res = await fetch('/api/save-aadhar', {
+      const data = await authApi({
+        url: '/api/save-aadhar',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, aadhar: a })
-      })
-      const data = await res.json()
-      if (res.ok) {
+        data: { phone, aadhar: a }
+      });
+      if (data?.ok) {
         router.push(`/dashboard`)
       } else {
         alert(data?.error || 'Failed to save aadhar')

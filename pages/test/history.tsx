@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { authApi } from '../../lib/authApi';
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { Eye } from "lucide-react";
@@ -36,9 +37,8 @@ export default function TestHistoryPage() {
   useEffect(() => {
     if (!userPhone) return;
     setLoading(true);
-    fetch(`/api/results?userPhone=${encodeURIComponent(userPhone)}`)
-      .then((r) => r.json())
-      .then((data) => {
+    authApi({ url: `/api/results?userPhone=${encodeURIComponent(userPhone)}` })
+      .then((data: any) => {
         if (data?.ok) setResults(data.results || []);
       })
       .catch(console.error)

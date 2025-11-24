@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { authApi } from '../../lib/authApi';
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import {
@@ -41,17 +41,16 @@ export default function StoredResult() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    axios
-      .get(`/api/results/${String(id)}`)
-      .then((res) => {
-        if (res.data?.ok) {
-          setResult(res.data.result);
+    authApi({ url: `/api/results/${String(id)}` })
+      .then((data: any) => {
+        if (data?.ok) {
+          setResult(data.result);
           // Fetch paper questions using paperId from result
-          return axios.get(`/api/papers/${res.data.result.paperId}`);
+          return authApi({ url: `/api/papers/${data.result.paperId}` });
         }
       })
-      .then((paperRes) => {
-        if (paperRes?.data?.ok) setPaper(paperRes.data.paper);
+      .then((paperData: any) => {
+        if (paperData?.ok) setPaper(paperData.paper);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

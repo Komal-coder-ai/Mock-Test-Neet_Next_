@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { authApi } from '../lib/authApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
@@ -29,9 +30,8 @@ export default function ProfileForm({ userId }: { userId: string }) {
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`/api/profile?userId=${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
+    authApi({ url: `/api/profile?userId=${userId}` })
+      .then((data: any) => {
         if (data.ok) {
           setProfile(data.profile);
           setForm({
@@ -57,12 +57,11 @@ export default function ProfileForm({ userId }: { userId: string }) {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/profile', {
+      const data = await authApi({
+        url: '/api/profile',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, userId }),
+        data: { ...form, userId },
       });
-      const data = await res.json();
       if (data.ok) {
         setProfile(data.profile);
         setEdit(false);
