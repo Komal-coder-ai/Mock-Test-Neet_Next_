@@ -170,8 +170,8 @@ export default function StoredResult() {
       <Confetti
         numberOfPieces={120}
         recycle={false}
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={typeof window !== 'undefined' ? window.innerWidth : 800}
+        height={typeof window !== 'undefined' ? window.innerHeight : 600}
       />
       <div className="max-w-4xl mx-auto px-4">
         <motion.div
@@ -212,7 +212,14 @@ export default function StoredResult() {
                 {result.wrongCount}
               </div>
             </div>
-            <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm col-span-3">
+            <div className="p-4 bg-purple-50 rounded-lg text-center shadow-sm col-span-1">
+              <div className="text-sm text-gray-600">Score</div>
+              <div className="text-lg font-bold text-purple-700">
+                {/* Score calculation: +4 for correct, -1 for wrong */}
+                {result.correctCount * 4 - result.wrongCount} / {result.total * 4}
+              </div>
+            </div>
+            <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm col-span-1">
               <div className="text-sm text-gray-600">Accuracy</div>
               <div className="text-lg font-bold text-yellow-700">
                 {result.answeredCount && result.answeredCount > 0
