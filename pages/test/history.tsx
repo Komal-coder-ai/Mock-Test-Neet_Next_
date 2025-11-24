@@ -52,7 +52,7 @@ export default function TestHistoryPage() {
     scrollerRef.current.scrollBy({ left: dir * 360, behavior: "smooth" });
   };
 
-  return (
+  return (  
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg p-8 mb-6">
@@ -132,12 +132,16 @@ export default function TestHistoryPage() {
                   <div className="px-6 py-4 rounded-lg bg-blue-50 text-center">
                     <div className="text-xs text-gray-600">Score</div>
                     <div className="text-lg font-bold">
-                      {r.correctCount}/{r.total}
+                      {(r.correctCount * 4 - (r.wrongCount || (r.total - r.correctCount)))} / {r.total * 4}
                     </div>
                   </div>
                   <div className="px-6 py-4 rounded-lg bg-green-50 text-center">
                     <div className="text-xs text-gray-600">Accuracy</div>
-                    <div className="text-lg font-bold">{r.percent}%</div>
+                    <div className="text-lg font-bold">
+                      {r.answeredCount && r.answeredCount > 0
+                        ? `${((r.correctCount / r.answeredCount) * 100).toFixed(2)}%`
+                        : 'N/A'}
+                    </div>
                   </div>
                 </div>
               </div>
