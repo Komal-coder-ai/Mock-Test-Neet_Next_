@@ -134,7 +134,7 @@ export default function TestHistoryPage() {
                     <div className="text-lg font-bold">
                       {r.answeredCount === 0
                         ? 0
-                        : (r.correctCount * 4 - (r.wrongCount || (r.total - r.correctCount)))}
+                        : (r.correctCount * 4 - r.wrongCount * 1)}
                       / {r.total * 4}
                     </div>
                   </div>

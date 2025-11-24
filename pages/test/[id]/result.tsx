@@ -133,7 +133,7 @@ export default function ResultPage() {
           </div>
           <div className="p-4 bg-purple-50 rounded-lg text-center shadow-sm">
             <div className="text-sm text-gray-600">Score</div>
-            <div className="text-lg font-bold text-purple-700">{result.answeredCount === 0 ? 0 : (result.correctCount * 4 - (result.wrongCount || (result.total - result.correctCount)))} / {result.total * 4}</div>
+            <div className="text-lg font-bold text-purple-700">{result.answeredCount === 0 ? 0 : (result.correctCount * 4 - result.wrongCount * 1)} / {result.total * 4}</div>
           </div>
           <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm">
             <div className="text-sm text-gray-600">Accuracy</div>
