@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const user = authenticateApi(req, res);
   if (!user) return;
   await connectToDatabase()
-
+  
   if (req.method === 'GET') {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ ok: false, error: 'Missing userId' });
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ ok: false, error: 'Server error' });
     }
   }
-  
+    
   if (req.method === 'POST') {
     const { fullName, class: userClass, dateOfBirth, userId } = req.body;
     if (!fullName || !userClass || !dateOfBirth || !userId) {
@@ -42,8 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { userId, ...update } = req.body;
     if (!userId) return res.status(400).json({ ok: false, error: 'Missing userId' });
     try {
-      const profile = await Profile.findOneAndUpdate({ userId }, update, { new: true });
-      if (!profile) return res.status(404).json({ ok: false, error: 'Profile not found' });
+      const profile = await Profile.findOneAndUpdate(
+        { userId },
+        update,
+        { new: true, upsert: true }
+      );
       res.status(200).json({ ok: true, profile });
     } catch (error) {
       res.status(500).json({ ok: false, error: 'Server error' });

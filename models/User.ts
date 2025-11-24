@@ -7,7 +7,7 @@ export interface IUser extends Document {
   otp?: string
   otpExpires?: Date
   verified?: boolean
-  role?: 'user' | 'admin'
+  role?: 'user' | 'admin' 
   createdAt: Date
 }
 
