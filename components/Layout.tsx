@@ -82,7 +82,7 @@ const Navbar = ({ user }: { user?: any }) => {
       color: "text-blue-600",
     },
     {
-      label: "Terms",
+      label: "Terms and Condition",
       icon: <ScrollText size={20} />,
       onClick: () => router.push(`/terms`),
       show:

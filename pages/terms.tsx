@@ -32,7 +32,7 @@ export default function Terms() {
           <section>
             <h2 className="text-lg font-semibold text-blue-700 mb-2">3. Privacy & Security</h2>
             <p>
-              Your personal data, including Aadhar and contact details, are encrypted and securely stored. We do not share your information with third parties except as required by law.
+              Your personal data and contact details are encrypted and securely stored. We do not share your information with third parties except as required by law.
             </p>
             <div className="flex items-center gap-2 mt-2 text-green-700">
               <ShieldCheck size={18} />

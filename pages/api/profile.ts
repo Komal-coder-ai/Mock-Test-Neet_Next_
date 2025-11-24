@@ -20,16 +20,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ ok: false, error: 'Server error' });
     }
   }
-
+  
   if (req.method === 'POST') {
-    const { fullName, class: userClass, dateOfBirth, aadharNumber, userId } = req.body;
-    if (!fullName || !userClass || !dateOfBirth || !aadharNumber || !userId) {
+    const { fullName, class: userClass, dateOfBirth, userId } = req.body;
+    if (!fullName || !userClass || !dateOfBirth || !userId) {
       return res.status(400).json({ ok: false, error: 'Missing fields' });
     }
     try { 
       const profile = await Profile.findOneAndUpdate(
         { userId },
-        { fullName, class: userClass, dateOfBirth, aadharNumber },
+        { fullName, class: userClass, dateOfBirth },
         { upsert: true, new: true }
       );
       res.status(200).json({ ok: true, profile });

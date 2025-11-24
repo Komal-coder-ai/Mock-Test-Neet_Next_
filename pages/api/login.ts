@@ -21,21 +21,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     await connectToDatabase()
-
     const user = await User.findOne({ phone: phoneStr })
-
-    // 🚫 If phone number not in DB → Login not allowed
     if (!user) {
-      return res.status(404).json({ error: 'Invalid user. Please register first.' })
+      return res.status(200).json({ ok: false, error: 'Invalid user. Please register first.' })
     }
 
-    // Generate OTP for login
-    const otp = generateOtp()
-    user.otp = otp
-    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000)
-    await user.save()
+    // Directly generate tokens (skip OTP)
+    const jwt = require('jsonwebtoken')
+    const jwtSecret = process.env.JWT_SECRET || 'dev_secret_change_me'
+    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_change_me'
+    const payload = { id: user._id.toString(), phone: user.phone, role: user.role || 'user' }
+    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '1d' })
+    const refreshToken = jwt.sign({ id: user._id.toString() }, jwtRefreshSecret, { expiresIn: '7d' })
 
-    return res.status(200).json({ ok: true, otp })
+    return res.status(200).json({ ok: true, accessToken, refreshToken, id: user._id, role: user.role || 'user' })
   } catch (err) {
     console.error(err)
     return res.status(500).json({ error: 'Server error' })

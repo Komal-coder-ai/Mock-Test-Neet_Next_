@@ -22,7 +22,7 @@ const verifyOTP = async (phone: string, otp: string) => {
     url: "/api/verify-otp",
     method: "POST",
     data: { phone, otp },
-  });
+  });  
   return { res: { ok: data?.ok }, data };
 };
 
@@ -40,7 +40,7 @@ function OTPBoxes({
     const chars = value.split("");
     while (chars.length < 6) chars.push("");
     chars[index] = val;
-    const final = chars.join("").slice(0, 6);
+    const final = chars.join("").slice(0, 6); 
     onChange(final);
     if (val && index < 5) inputs.current[index + 1]?.focus();
   }
@@ -104,12 +104,7 @@ export default function LoginPage() {
       
     } catch (e) {}
   }, [])
-  const [step, setStep] = useState<"request" | "verify">("request");
-  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [phoneStored, setPhoneStored] = useState("");
-  const [ReOTP, setReOTP] = useState("");
-  const [otp, setOtp] = useState("");
 
   const features = [
     {
@@ -214,12 +209,12 @@ export default function LoginPage() {
       </motion.div>
 
       {/* Right Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-md form-card p-6 sm:p-8"
+          className="w-full max-w-md form-card p-6 sm:p-8 mx-auto"
         >
           {/* Header with animated icon */}
           <div className="text-center mb-6">
@@ -234,7 +229,7 @@ export default function LoginPage() {
               🔐
             </motion.div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Sign In</h2>
-            <p className="muted mt-2 text-sm sm:text-base">Enter your phone number to receive OTP</p>
+            <p className="muted mt-2 text-sm sm:text-base">Enter your phone number to login</p>
           </div>
 
           <Formik
@@ -248,7 +243,6 @@ export default function LoginPage() {
             }}
             onSubmit={async (values: any, { setSubmitting }: any) => {
               setError(null);
-              setMessage(null);
               setSubmitting(true);
               try {
                 const phone = String(values.phone)
@@ -259,20 +253,22 @@ export default function LoginPage() {
                   setSubmitting(false);
                   return;
                 }
-                
-                const { res, data } = await sendOTP(phone);
-                
-                if (res.ok) {
-                  setMessage("OTP sent (check response in dev)");
-                  setReOTP(data.otp || "");
-                  if (data?.otp) setMessage((m) => `${m} — OTP: ${data.otp}`);
-                  setPhoneStored(phone);
+                const data = await authApi({
+                  url: "/api/login",
+                  method: "POST",
+                  data: { phone },
+                });
+                if (data?.ok && data?.accessToken) {
                   try {
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("refreshToken", data.refreshToken);
+                    localStorage.setItem("userRole", data.role);
+                    localStorage.setItem("userId", data.id);
                     localStorage.setItem("userPhone", phone);
                   } catch (e) {}
-                  setStep("verify");
+                  router.push("/dashboard");
                 } else {
-                  setError(data?.error || "Failed to send OTP");
+                  setError(data?.error || "Login failed");
                 }
               } catch (err) {
                 setError("Network error");
@@ -283,167 +279,61 @@ export default function LoginPage() {
           >
             {({ errors, touched, isSubmitting }: any) => (
               <Form className="space-y-5">
-                {step === "request" && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                  >
-                    <div>
-                      <label className="flex text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
-                        <span>📞</span> Phone Number
-                      </label>
-                      <Field name="phone">
-                        {({ field }: any) => (
-                          <input
-                            {...field}
-                            inputMode="numeric"
-                            maxLength={10}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/\D/g, "");
-                              field.onChange({
-                                target: { name: field.name, value: digits },
-                              });
-                            }}
-                            className="w-full border-2 border-gray-300 rounded-lg p-3 text-base sm:text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-                            placeholder="Enter 10-digit number"
-                          />
-                        )}
-                      </Field>
-                      {touched.phone && <ErrorMsg>{errors.phone}</ErrorMsg>}
-                    </div>
-                    {message && (
-                      <motion.div
-                        className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        ✅ {message}
-                      </motion.div>
-                    )}
-                    {error && <ErrorMsg>{error}</ErrorMsg>}
-                    <motion.button
-                      className="w-full mt-3 btn-primary py-3 text-base sm:text-lg font-semibold rounded-lg shadow-md"
-                      type="submit"
-                      disabled={isSubmitting}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <motion.span
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                          >
-                            ⏳
-                          </motion.span>
-                          Sending...
-                        </span>
-                      ) : (
-                        "Send OTP →"
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <div>
+                    <label className="flex text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
+                      <span>📞</span> Phone Number
+                    </label>
+                    <Field name="phone">
+                      {({ field }: any) => (
+                        <input
+                          {...field}
+                          inputMode="numeric"
+                          maxLength={10}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "");
+                            field.onChange({
+                              target: { name: field.name, value: digits },
+                            });
+                          }}
+                          className="w-full border-2 border-gray-300 rounded-lg p-3 text-base sm:text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                          placeholder="Enter 10-digit number"
+                        />
                       )}
-                    </motion.button>
-                  </motion.div>
-                )}
-
-                {step === "verify" && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                    </Field>
+                    {touched.phone && <ErrorMsg>{errors.phone}</ErrorMsg>}
+                  </div>
+                  {error && <ErrorMsg>{error}</ErrorMsg>}
+                  <motion.button
+                    className="w-full mt-3 btn-primary flex justify-center py-2 text-sm font-medium rounded-md shadow-sm border border-blue-400 hover:bg-blue-50 transition-all"
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <div className="text-center mb-4">
-                      <motion.div
-                        className="inline-block text-3xl sm:text-4xl mb-2"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      >
-                        📬
-                      </motion.div>
-                      <p className="text-sm text-gray-600">
-                        OTP sent to <strong>{phoneStored}</strong>
-                      </p>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-sm font-semibold text-gray-700 mb-3 text-center">
-                        Enter 6-Digit OTP
-                      </label>
-                      <OTPBoxes value={otp} onChange={setOtp} />
-                    </div>
-
-                    {error && <ErrorMsg>{error}</ErrorMsg>}
-                    <div className="flex justify-center mb-4">
-                      <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-md font-mono">
-                        Dev OTP: {ReOTP}
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        >
+                          ⏳
+                        </motion.span>
+                        Logging in...
                       </span>
-                    </div>
-                    <motion.button
-                      className="w-full btn-primary py-3 text-base sm:text-lg font-semibold rounded-lg shadow-md mt-4"
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={async () => {
-                        if (otp.length !== 6) {
-                          setError("Enter 6-digit OTP");
-                          return;
-                        }
-                        try {
-                          const { res, data } = await verifyOTP(phoneStored, otp);
-                          
-                          if (res.ok) {
-                            try {
-                              if (data?.accessToken)
-                                localStorage.setItem(
-                                  "accessToken",
-                                  data.accessToken
-                                );
-                              if (data?.refreshToken)
-                                localStorage.setItem(
-                                  "refreshToken",
-                                  data.refreshToken
-                                );
-                              if (data?.role)
-                                localStorage.setItem("userRole", data.role);
-                              if (data?.id)
-                                localStorage.setItem("userId", data.id);
-                            } catch (e) {}
-                            if (data?.role === "admin")
-                              router.push("/dashboard");
-                            else
-                              router.push(
-                                `/adhar?phone=${encodeURIComponent(
-                                  phoneStored
-                                )}`
-                              );
-                          } else {
-                            setError(data?.error || "OTP verification failed");
-                          }
-                        } catch (err) {
-                          setError("Network error");
-                        }
-                      }}
-                    >
-                      Verify & Continue ✓
-                    </motion.button>
-
-                    <div className="flex flex-col xs:flex-row gap-3 mt-4">
-                      <motion.button
-                        type="button"
-                        className="flex-1 border-2 border-gray-300 rounded-lg py-2.5 font-medium hover:bg-gray-50 transition-all text-sm sm:text-base"
-                        onClick={() => setStep("request")}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        ← Back
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                )}
+                    ) : (
+                      "Login →"
+                    )}
+                  </motion.button>
+                </motion.div>
               </Form>
             )}
           </Formik>
@@ -472,10 +362,9 @@ export default function LoginPage() {
           </motion.div>
 
           <Toast
-            message={message || error || null}
+            message={error || null}
             type={error ? "error" : "success"}
             onClose={() => {
-              setMessage(null);
               setError(null);
             }}
           />

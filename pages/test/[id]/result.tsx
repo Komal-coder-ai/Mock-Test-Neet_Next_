@@ -40,26 +40,16 @@ export default function ResultPage() {
     }
   }, [id])
 
-  if (!submission) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <XCircle className="h-10 w-10 text-red-400 mb-4" />
-        <div className="text-red-700 font-medium text-lg mb-6">No submission found</div>
-        {/* Skeleton loader for no submission */}
-        <div className="w-full max-w-2xl mx-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
-            <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
-            <div className="h-32 bg-gray-200 rounded" />
-            <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
+    if (!submission) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-50"></div>
+            <div className="text-lg text-gray-700 font-semibold">Loading your result...</div>
           </div>
         </div>
-        <div className="mt-4">
-          <button className="px-4 py-2 rounded bg-blue-600 text-white" onClick={() => router.push(`/test/${String(id)}`)}>Go to Test</button>
-        </div>
-      </div>
-    )
-  }
+      );
+    }
 
   const { result } = submission
 
@@ -131,7 +121,19 @@ export default function ResultPage() {
               <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded ml-1">{result.percent}%</span>
             </div>
           </div>
-         
+          {/* Accuracy Section */}
+          <div className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle2 size={24} className="text-green-600" />
+            </div>
+            <div>
+              <div className="text-xs text-gray-600">Accuracy</div>
+              <div className="font-bold text-lg">{result.percent}%</div>
+              <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded ml-1">
+                {result.correctCount} correct / {result.answeredCount} attempted
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Subject-wise Performance Bar Chart */}

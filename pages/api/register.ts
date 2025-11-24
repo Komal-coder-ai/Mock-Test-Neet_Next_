@@ -11,7 +11,7 @@ function generateOtp() {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { name, phone, aadhar, type } = req.body || {}
+  const { name, phone, type } = req.body || {}
   if (!name || !phone) return res.status(400).json({ error: 'Name and phone are required' })
   const phoneStr = String(phone).replace(/\D/g, '')
   if (phoneStr.length !== 10) return res.status(400).json({ error: 'Phone must be a 10-digit number' })
@@ -22,12 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let user = await User.findOne({ phone: phoneStr })
     if (!user) {
       const role = type === 'admin' ? 'admin' : 'user'
-      user = await User.create({ name, phone: phoneStr, aadhar, role })
+      user = await User.create({ name, phone: phoneStr, role })
     } else {
-      // update aadhar/name if provided
-      if (aadhar) user.aadhar = aadhar
       if (name) user.name = name
-      // allow upgrading to admin if type explicitly provided
       if (type === 'admin') user.role = 'admin'
     }
 

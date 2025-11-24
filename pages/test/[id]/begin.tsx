@@ -726,7 +726,7 @@ export default function TestRunner() {
                             )}
                             %
                           </div>
-                          <div className="text-sm text-blue-700">Progress</div>
+                          <div className="text-sm text-blue-700">Accuracy</div>
                         </div>
                       </div>
 
