@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { authApi } from '../lib/authApi';
+import { authApi } from "../lib/authApi";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -30,8 +30,7 @@ type PaperItem = {
 
 export default function Dashboard() {
   const router = useRouter();
-  const phone =
-    typeof router.query.phone === "string" ? router.query.phone : "";
+  const [phone, setPhone] = useState<string>("");
   const [user, setUser] = useState<any | null>(null);
 
   // papers
@@ -41,15 +40,27 @@ export default function Dashboard() {
   const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [subjectRanksMap, setSubjectRanksMap] = useState<Record<string, any>>(
+    {}
+  );
+
+  useEffect(() => {
+    // Only access localStorage in browser
+    if (typeof window !== "undefined") {
+      const storedPhone = localStorage.getItem("userPhone") || "";
+      setPhone(storedPhone);
+    }
+  }, []);
 
   useEffect(() => {
     if (!phone) return;
-    authApi({ url: `/api/user?phone=${encodeURIComponent(phone)}` })
-      .then((data: any) => {
+    authApi({ url: `/api/user?phone=${encodeURIComponent(phone)}` }).then(
+      (data: any) => {
         if (data?.ok) setUser(data.user);
-      });
+      }
+    );
   }, [phone]);
-  
+
   useEffect(() => {
     fetchPapers();
     setPage(1);
@@ -58,7 +69,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchPapers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
   async function fetchPapers() {
@@ -78,6 +88,19 @@ export default function Dashboard() {
     }
   }
 
+  useEffect(() => {
+    if (phone) {
+      (async () => {
+        try {
+          const res = await fetch(`/api/papers/rank?userPhone=${phone}`);
+          const rankData = await res.json();
+          setSubjectRanksMap({ userRanks: rankData.ranks || [] });
+        } catch (err) {
+          setSubjectRanksMap({ userRanks: [] });
+        }
+      })();
+    }
+  }, [phone]);
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
@@ -172,76 +195,151 @@ export default function Dashboard() {
               >
                 <TrendingUp size={40} className="text-blue-600" />
               </motion.div>
-              <p className="text-gray-600 font-medium text-sm sm:text-base">Loading papers...</p>
+              <p className="text-gray-600 font-medium text-sm sm:text-base">
+                Loading papers...
+              </p>
             </motion.div>
           )}
 
           <AnimatePresence mode="wait">
             {!loading &&
-              papers.map((p, idx) => (
-                <motion.div
-                  key={p._id}
-                  className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="flex items-start gap-3 sm:gap-4 flex-1">
-                      <div
-                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          category === "JEE"
-                            ? "bg-gradient-to-br from-blue-600 to-indigo-600"
-                            : "bg-gradient-to-br from-emerald-600 to-teal-600"
-                        }`}
-                      >
-                        <FileCheck size={20} className="text-white sm:w-6 sm:h-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">
-                          {p.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600">
-                          <span className="flex items-center gap-1">
-                            <Clock size={14} />
-                            <span className="whitespace-nowrap">{p.durationMinutes} mins</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <FileText size={14} />
-                            <span className="whitespace-nowrap">{p.totalQuestions} Questions</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            <span className="whitespace-nowrap">
-                              {p.date
-                                ? new Date(p.date).toLocaleDateString()
-                                : "Latest"}
+              papers.map((p, idx) => {
+                // Only show rank for the paper that matches user's rank object
+                const userRanksArr = subjectRanksMap.userRanks || [];
+                let myRankObj = null;
+                if (user && userRanksArr.length > 0) {
+                  myRankObj = userRanksArr.find(
+                    (r: any) =>
+                      r.paperId === p._id && r.userPhone === user.phone
+                  );
+                }
+                // Professional rank icons
+                const rankIcons = [
+                  <span
+                    key="I"
+                    style={{
+                      fontWeight: "bold",
+                      color: "#FFD700",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    🥇 I
+                  </span>,
+                  <span
+                    key="II"
+                    style={{
+                      fontWeight: "bold",
+                      color: "#C0C0C0",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    🥈 II
+                  </span>,
+                  <span
+                    key="III"
+                    style={{
+                      fontWeight: "bold",
+                      color: "#CD7F32",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    🥉 III
+                  </span>,
+                ];
+                return (
+                  <motion.div
+                    key={p._id}
+                    className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                        <div
+                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            category === "JEE"
+                              ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                              : "bg-gradient-to-br from-emerald-600 to-teal-600"
+                          }`}
+                        >
+                          <FileCheck
+                            size={20}
+                            className="text-white sm:w-6 sm:h-6"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">
+                            {p.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600">
+                            <span className="flex items-center gap-1">
+                              <Clock size={14} />
+                              <span className="whitespace-nowrap">
+                                {p.durationMinutes} mins
+                              </span>
                             </span>
-                          </span>
+                            <span className="flex items-center gap-1">
+                              <FileText size={14} />
+                              <span className="whitespace-nowrap">
+                                {p.totalQuestions} Questions
+                              </span>
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Calendar size={14} />
+                              <span className="whitespace-nowrap">
+                                {p.date
+                                  ? new Date(p.date).toLocaleDateString()
+                                  : "Latest"}
+                              </span>
+                            </span>
+                          </div>
                         </div>
                       </div>
+                      {/* Rank display before button */}
+                      <div className="flex  items-end gap-2">
+                        {user && myRankObj && (
+                          <div className=" flex items-center gap-3 p-1 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 shadow-sm">
+                            <Trophy
+                              size={18}
+                              className="text-yellow-500 mr-1"
+                            />
+                            <span className="font-bold text-base text-indigo-700 tracking-wide">
+                              Rank
+                            </span>
+                            <span className="text-indigo-900 font-extrabold text-lg bg-white px-3 py-1 rounded shadow">
+                              {myRankObj.rank}{" "}
+                              <span className="text-gray-500">/</span>{" "}
+                              {myRankObj.totalParticipants}
+                            </span>
+                          </div>
+                        )}
+                        <motion.button
+                          className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap 
+                            ${
+                              category === "NEET"
+                                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
+                                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                            }
+                          `}
+                          onClick={() =>
+                            router.push(
+                              `/test/${p._id}?phone=${encodeURIComponent(
+                                phone
+                              )}`
+                            )
+                          }
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          {user && myRankObj ? "Try Again" : "Start Test"}
+                        </motion.button>
+                      </div>
                     </div>
-
-                    <motion.button
-                      className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap 
-                        ${category === "NEET" 
-                          ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700" 
-                          : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"}
-                      `}
-                      onClick={() =>
-                        router.push(
-                          `/test/${p._id}?phone=${encodeURIComponent(phone)}`
-                        )
-                      }
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Start Test
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
           </AnimatePresence>
 
           {!loading && papers.length === 0 && (
@@ -273,7 +371,9 @@ export default function Dashboard() {
               Page <span className="font-semibold text-gray-900">{page}</span>{" "}
               of{" "}
               <span className="font-semibold text-gray-900">{totalPages}</span>
-              <span className="block sm:inline sm:ml-2">({total} total papers)</span>
+              <span className="block sm:inline sm:ml-2">
+                ({total} total papers)
+              </span>
             </div>
             <div className="flex gap-2">
               <motion.button
@@ -302,7 +402,6 @@ export default function Dashboard() {
           </motion.div>
         )}
       </main>
-
     </div>
   );
 }

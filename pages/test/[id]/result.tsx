@@ -24,21 +24,29 @@ ChartJS.register(
 );
 
 export default function ResultPage() {
-  const router = useRouter()
-  const { id } = router.query
-  const [submission, setSubmission] = useState<any>(null)
+  const router = useRouter();
+  const { id } = router.query;
+  const [submission, setSubmission] = useState<any>(null);
+  const [subjectRanks, setSubjectRanks] = useState<any>(null);
   // For debugging
   console.log(submission, "submission");
 
   useEffect(() => {
-    if (!id) return
+    if (!id) return;
     try {
-      const raw = localStorage.getItem(`lastSubmission_${String(id)}`)
-      if (raw) setSubmission(JSON.parse(raw))
+      const raw = localStorage.getItem(`lastSubmission_${String(id)}`);
+      if (raw) setSubmission(JSON.parse(raw));
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
-  }, [id])
+    // Fetch subject ranks from API
+    fetch(`/api/papers/${id}/rank`)
+      .then(res => res.json())
+      .then(data => {
+        setSubjectRanks(data.subjectRanks || {});
+      })
+      .catch(err => console.warn('Failed to fetch subject ranks', err));
+  }, [id]);
 
     if (!submission) {
       return (
@@ -144,6 +152,29 @@ export default function ResultPage() {
           <Bar data={subjectData} options={subjectOptions} />
         </div>
 
+        {/* Subject Ranks Section */}
+        {subjectRanks && (
+          <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+            <h3 className="font-semibold text-lg mb-2 text-gray-800">Your Subject Ranks</h3>
+            <ul className="space-y-2">
+              {Object.entries(subjectRanks).map(([subject, ranks]: any) => {
+                // Find current user's rank for this subject
+                const myRank = ranks.find((r: any) => r.userPhone === result.userPhone);
+                return (
+                  <li key={subject} className="flex justify-between items-center border-b pb-2">
+                    <span className="font-semibold text-gray-700">{subject}</span>
+                    {myRank ? (
+                      <span className="text-blue-600 font-bold">Rank: {myRank.rank}</span>
+                    ) : (
+                      <span className="text-gray-400">No rank</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
         {/* Detailed Analysis */}
         <div className="mt-8">
           <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
@@ -198,5 +229,5 @@ export default function ResultPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
