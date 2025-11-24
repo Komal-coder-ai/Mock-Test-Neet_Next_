@@ -132,7 +132,10 @@ export default function TestHistoryPage() {
                   <div className="px-6 py-4 rounded-lg bg-blue-50 text-center">
                     <div className="text-xs text-gray-600">Score</div>
                     <div className="text-lg font-bold">
-                      {(r.correctCount * 4 - (r.wrongCount || (r.total - r.correctCount)))} / {r.total * 4}
+                      {r.answeredCount === 0
+                        ? 0
+                        : (r.correctCount * 4 - (r.wrongCount || (r.total - r.correctCount)))}
+                      / {r.total * 4}
                     </div>
                   </div>
                   <div className="px-6 py-4 rounded-lg bg-green-50 text-center">
@@ -140,7 +143,7 @@ export default function TestHistoryPage() {
                     <div className="text-lg font-bold">
                       {r.answeredCount && r.answeredCount > 0
                         ? `${((r.correctCount / r.answeredCount) * 100).toFixed(2)}%`
-                        : 'N/A'}
+                        : '0%'}
                     </div>
                   </div>
                 </div>

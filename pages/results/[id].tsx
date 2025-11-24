@@ -224,7 +224,7 @@ export default function StoredResult() {
               <div className="text-lg font-bold text-yellow-700">
                 {result.answeredCount && result.answeredCount > 0
                   ? `${((result.correctCount / result.answeredCount) * 100).toFixed(2)}%`
-                  : 'N/A'}
+                  : '0%'}
               </div>
             </div>
           </div>

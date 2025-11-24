@@ -117,30 +117,27 @@ export default function ResultPage() {
           <p className="text-sm text-gray-600">Your comprehensive performance summary</p>
         </div>
 
-        {/* Score and accuracy */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <BarChartHorizontal size={24} className="text-blue-600" />
-            </div>
-            <div>
-              <div className="text-xs text-gray-600">Total Score</div>
-              <div className="font-bold text-lg">{result.correctCount}/{result.total}</div>
-              <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded ml-1">{result.percent}%</span>
-            </div>
+        {/* Summary cards for Total Questions, Correct, Wrong, Score, Accuracy */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="p-4 bg-blue-50 rounded-lg text-center shadow-sm">
+            <div className="text-sm text-gray-600">Total Questions</div>
+            <div className="text-lg font-bold text-blue-700">{result.total}</div>
           </div>
-          {/* Accuracy Section */}
-          <div className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 size={24} className="text-green-600" />
-            </div>
-            <div>
-              <div className="text-xs text-gray-600">Accuracy</div>
-              <div className="font-bold text-lg">{result.percent}%</div>
-              <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded ml-1">
-                {result.correctCount} correct / {result.answeredCount} attempted
-              </span>
-            </div>
+          <div className="p-4 bg-green-50 rounded-lg text-center shadow-sm">
+            <div className="text-sm text-gray-600">Correct</div>
+            <div className="text-lg font-bold text-green-700">{result.correctCount}</div>
+          </div>
+          <div className="p-4 bg-red-50 rounded-lg text-center shadow-sm">
+            <div className="text-sm text-gray-600">Wrong</div>
+            <div className="text-lg font-bold text-red-700">{result.wrongCount}</div>
+          </div>
+          <div className="p-4 bg-purple-50 rounded-lg text-center shadow-sm">
+            <div className="text-sm text-gray-600">Score</div>
+            <div className="text-lg font-bold text-purple-700">{result.answeredCount === 0 ? 0 : (result.correctCount * 4 - (result.wrongCount || (result.total - result.correctCount)))} / {result.total * 4}</div>
+          </div>
+          <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm">
+            <div className="text-sm text-gray-600">Accuracy</div>
+            <div className="text-lg font-bold text-yellow-700">{result.answeredCount && result.answeredCount > 0 ? `${((result.correctCount / result.answeredCount) * 100).toFixed(2)}%` : '0%'}</div>
           </div>
         </div>
 
@@ -168,7 +165,7 @@ export default function ResultPage() {
                     ) : (
                       <span className="text-gray-400">No rank</span>
                     )}
-                  </li>
+                  </li> 
                 );
               })}
             </ul>
