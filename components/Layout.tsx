@@ -21,10 +21,18 @@ const COLORS = {
 };
 
 const Navbar = ({ user }: { user?: any }) => {
-  console.log(user, "useruser");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   console.log(mobileMenuOpen, "mobileMenuOpen");
+  const [scrolled, setScrolled] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  console.log(scrolled, "scrolled");
   const router = useRouter();
 
   const isAuthPage =
@@ -38,7 +46,7 @@ const Navbar = ({ user }: { user?: any }) => {
 
   // Define navigation links as objects
   const navLinks = [
-    { 
+    {
       label: "Home",
       icon: <HomeIcon size={20} />,
       onClick: () => router.push(`/dashboard`),
@@ -60,7 +68,8 @@ const Navbar = ({ user }: { user?: any }) => {
       label: "Profile",
       icon: <User size={20} />,
       onClick: () => {
-        const userId = localStorage.getItem("userId") || localStorage.getItem("user");
+        const userId =
+          localStorage.getItem("userId") || localStorage.getItem("user");
         if (userId) {
           router.push("/profile");
         } else {
@@ -76,7 +85,8 @@ const Navbar = ({ user }: { user?: any }) => {
       label: "Terms",
       icon: <ScrollText size={20} />,
       onClick: () => router.push(`/terms`),
-      show: !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
+      show:
+        !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
       desktop: true,
       mobile: true,
       color: "text-blue-600",
@@ -115,7 +125,8 @@ const Navbar = ({ user }: { user?: any }) => {
           });
         }
       },
-      show: !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
+      show:
+        !isAuthPage && !(isHomePage || router.pathname.startsWith("/login")),
       desktop: true,
       mobile: true,
       color: "text-red-600",
@@ -123,11 +134,14 @@ const Navbar = ({ user }: { user?: any }) => {
     },
   ];
 
-
   return (
     <nav
       className={`
-        relative ${COLORS.navShadow} ${COLORS.navBorder} sticky top-0 z-50 overflow-hidden
+
+        ${!scrolled ? "backdrop-blur-md bg-white/70" : COLORS.navBg}
+        relative ${COLORS.navShadow} ${
+        COLORS.navBorder
+      } sticky top-0 z-50 overflow-hidden
         
         `}
       style={{ boxShadow: "0 2px 8px rgba(44,62,80,0.08)" }}
@@ -157,7 +171,7 @@ const Navbar = ({ user }: { user?: any }) => {
           </div>
           <div className="ml-3">
             <div
-              className={`font-extrabold text-xl md:text-2xl tracking-tight text-blue-700 drop-shadow-sm`}
+              className={`font-extrabold text-xl md:text-2xl tracking-tight drop-shadow-sm ${scrolled ? 'text-white' : 'text-blue-700'}`}
             >
               HPBOSE
             </div>
@@ -173,12 +187,13 @@ const Navbar = ({ user }: { user?: any }) => {
         <div className="hidden md:flex items-center gap-6 lg:gap-10">
           {navLinks
             .filter((link) => link.desktop && link.show)
-            .map((link) =>
-              link.isLink ? (
+            .map((link) => {
+              const linkColor = scrolled ? "text-white" : link.color;
+              return link.isLink ? (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`flex items-center gap-2 text-base font-bold ${link.color} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 drop-shadow-sm`}
+                  className={`flex items-center gap-2 text-base font-bold ${linkColor} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 drop-shadow-sm`}
                 >
                   {link.icon}
                   <span className="hidden lg:inline">{link.label}</span>
@@ -186,24 +201,25 @@ const Navbar = ({ user }: { user?: any }) => {
               ) : (
                 <button
                   key={link.label}
-                  className={`flex items-center gap-2 text-base font-bold ${link.color} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
+                  className={`flex items-center gap-2 text-base font-bold ${linkColor} hover:text-green-500 px-4 py-2 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer drop-shadow-sm`}
                   onClick={link.onClick}
                 >
                   {link.icon}
                   <span className="hidden lg:inline">{link.label}</span>
                 </button>
-              )
-            )}
+              );
+            })}
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-blue-600 drop-shadow-sm"
+          className={`md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-colors drop-shadow-sm
+            ${scrolled ? 'bg-gradient-to-r from-blue-700 to-indigo-700 text-white hover:bg-indigo-800' : 'bg-white/10 hover:bg-white/20 text-blue-600'}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
           <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
+            className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-200 ${scrolled ? 'text-white' : 'text-blue-600'}`}
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -247,12 +263,13 @@ const Navbar = ({ user }: { user?: any }) => {
           <div className="px-4 py-3 space-y-2">
             {navLinks
               .filter((link) => link.mobile && link.show)
-              .map((link) =>
-                link.isLink ? (
+              .map((link) => {
+                const linkColor = scrolled ? "text-white" : link.color;
+                return link.isLink ? (
                   <Link
                     key={link.label}
-                    href={link.href}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${link.color} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors drop-shadow-sm`}
+                    href={link.href || ""}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${linkColor} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors drop-shadow-sm`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.icon}
@@ -261,7 +278,7 @@ const Navbar = ({ user }: { user?: any }) => {
                 ) : (
                   <button
                     key={link.label}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${link.color} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold ${linkColor} hover:text-green-500 hover:bg-white/10 rounded-lg transition-colors bg-transparent border-none cursor-pointer text-left drop-shadow-sm`}
                     onClick={() => {
                       link.onClick();
                       setMobileMenuOpen(false);
@@ -270,15 +287,14 @@ const Navbar = ({ user }: { user?: any }) => {
                     {link.icon}
                     {link.label}
                   </button>
-                )
-              )}
+                );
+              })}
           </div>
         </div>
       )}
     </nav>
   );
-
-} ;
+};
 
 const Footer = () => (
   <footer className=" py-8 sm:py-10 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
@@ -309,9 +325,16 @@ const Footer = () => (
   </footer>
 );
 
-const Layout = ({ children, user }: { children: React.ReactNode; user?: any }) => {
+const Layout = ({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user?: any;
+}) => {
   const router = useRouter();
-  const isTestBeginPage = router.pathname.startsWith("/test/") && router.pathname.endsWith("/begin");
+  const isTestBeginPage =
+    router.pathname.startsWith("/test/") && router.pathname.endsWith("/begin");
   return (
     <div className="bg-gray-50 flex flex-col">
       {!isTestBeginPage && <Navbar user={user} />}
