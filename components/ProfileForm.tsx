@@ -44,9 +44,12 @@ export default function ProfileForm({ userId }: { userId: string }) {
   }, [userId]);
   if (loading && !profile) {
     return (
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
-        <User size={32} className="text-blue-600 mb-4" />
-        <p className="text-gray-600">Loading profile information...</p>
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-8 flex flex-col items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-4 animate-spin">
+          <User size={32} className="text-blue-600" />
+        </div>
+        <div className="font-semibold text-lg text-gray-900 mb-1">Loading Profile</div>
+        <div className="text-sm text-gray-500">Please wait while we fetch your information...</div>
       </div>
     );
   }
@@ -128,7 +131,7 @@ export default function ProfileForm({ userId }: { userId: string }) {
             value={form.fullName}
             onChange={handleChange}
             fullWidth
-            disabled
+            // disabled
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -138,7 +141,7 @@ export default function ProfileForm({ userId }: { userId: string }) {
             }}
             variant="outlined"
             margin="normal"
-          />
+          />   
         </div>
 
         {/* Class (editable only) */}

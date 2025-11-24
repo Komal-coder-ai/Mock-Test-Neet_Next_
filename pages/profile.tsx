@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProfileForm from '../components/ProfileForm';
+import { User } from 'lucide-react';
 
 export default function ProfilePage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -16,15 +17,18 @@ export default function ProfilePage() {
       }
     }
   }, []);
-
+ 
   if (!userId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded shadow text-center">
-          <h2 className="text-xl font-bold mb-2">Profile</h2>
-          <p className="text-gray-600">User ID not found. Please login or verify OTP.</p>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-8 flex flex-col items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-4 animate-spin">
+              <User size={32} className="text-blue-600" />
+            </div>
+            <div className="font-semibold text-lg text-gray-900 mb-1">Loading Profile</div>
+            <div className="text-sm text-gray-500">Please wait while we fetch your information...</div>
+          </div>
         </div>
-      </div>
     );
   }
 

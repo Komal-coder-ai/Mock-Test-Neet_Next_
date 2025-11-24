@@ -89,20 +89,12 @@ export default function StoredResult() {
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
-          <History className="h-8 w-8 text-blue-400" />
+        
         </motion.div>
         <div className="text-blue-700 font-medium text-lg mb-6">
           Loading your result...
         </div>
-        {/* Skeleton loader */}
-        <div className="w-full max-w-2xl mx-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto" />
-            <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto" />
-            <div className="h-32 bg-gray-200 rounded" />
-            <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto" />
-          </div>
-        </div>
+      
       </div>
     );
   if (!result || !paper)

@@ -7,8 +7,10 @@ import { CheckCircle2, XCircle } from "lucide-react";
 export default function ReviewPage() {
   const router = useRouter();
   const { id } = router.query;
+  const [loading, setLoading] = useState(false);
   const [submission, setSubmission] = useState<any>(null);
   const [paper, setPaper] = useState<any>(null);
+console.log(loading,"loadingloading");
 
   useEffect(() => {
     if (!id) return;
@@ -19,14 +21,16 @@ export default function ReviewPage() {
       console.warn(e);
     }
 
+    setLoading(true);
     authApi({ url: `/api/papers/${String(id)}` })
       .then((data: any) => {
         if (data?.ok) setPaper(data.paper);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (!submission || !paper) {
+  if (!submission && loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-4">
@@ -39,18 +43,18 @@ export default function ReviewPage() {
     );
   }
 
-  const answers = submission.answers || {};
+  const answers = submission?.answers || {};
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Answer Review</h2>
-          <div className="text-sm text-gray-600">Paper: {paper.title}</div>
+          <div className="text-sm text-gray-600">Paper: {paper?.title}</div>
         </div>
 
         <div className="space-y-4">
-          {(paper.questions || []).map((q: any, idx: number) => {
+          {(paper?.questions || []).map((q: any, idx: number) => {
             const qid = q && q._id ? String(q._id) : String(idx);
             const selected = answers[qid];
             const correct =
