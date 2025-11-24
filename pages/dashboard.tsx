@@ -300,17 +300,17 @@ export default function Dashboard() {
                       {/* Rank display before button */}
                       <div className="flex  items-end gap-2">
                         {user && myRankObj && (
-                          <div className=" flex items-center gap-3 p-1 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 shadow-sm">
+                          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 p-2 sm:p-1 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 shadow-sm w-full sm:w-auto">
                             <Trophy
                               size={18}
-                              className="text-yellow-500 mr-1"
+                              className="text-yellow-500 mr-1 flex-shrink-0"
                             />
-                            <span className="font-bold text-base text-indigo-700 tracking-wide">
+                            <span className="font-bold text-sm sm:text-base text-indigo-700 tracking-wide">
                               Rank
                             </span>
-                            <span className="text-indigo-900 font-extrabold text-lg bg-white px-3 py-1 rounded shadow">
-                              {myRankObj.rank}{" "}
-                              <span className="text-gray-500">/</span>{" "}
+                            <span className="text-indigo-900 font-extrabold text-base sm:text-lg bg-white px-2 sm:px-3 py-1 rounded shadow flex items-center">
+                              {myRankObj.rank}
+                              <span className="text-gray-500 mx-1">/</span>
                               {myRankObj.totalParticipants}
                             </span>
                           </div>
