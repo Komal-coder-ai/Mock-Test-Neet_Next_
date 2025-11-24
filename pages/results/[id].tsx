@@ -212,6 +212,14 @@ export default function StoredResult() {
                 {result.wrongCount}
               </div>
             </div>
+            <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm col-span-3">
+              <div className="text-sm text-gray-600">Accuracy</div>
+              <div className="text-lg font-bold text-yellow-700">
+                {result.answeredCount && result.answeredCount > 0
+                  ? `${((result.correctCount / result.answeredCount) * 100).toFixed(2)}%`
+                  : 'N/A'}
+              </div>
+            </div>
           </div>
 
         
@@ -230,6 +238,7 @@ export default function StoredResult() {
             <div className="space-y-3" >
               {subjects.map((sub) => {
                 const percent = sub.total ? Math.round((sub.correct / sub.total) * 100) : 0;
+                const accuracy = sub.attempted && sub.attempted > 0 ? ((sub.correct / sub.attempted) * 100).toFixed(2) : null;
                 return (
                   <div key={sub.name} className="w-full bg-gray-50 border rounded-lg px-4 py-3 mb-2">
                     <div className="flex items-center justify-between mb-1">
@@ -240,6 +249,7 @@ export default function StoredResult() {
                         <span className="text-xs text-gray-600">
                           {sub.correct || 0} / {sub.total || 0} correct
                         </span>
+                        
                         <button
                           className="items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm bg-blue-600 text-white"
                           onClick={(e) => {
