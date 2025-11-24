@@ -57,6 +57,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const allRanks = await Rank.find({ paperId: id });
 		res.status(200).json({ ranks: allRanks });
 	} catch (error) {
-		res.status(500).json({ error: 'Server error', details: error.message });
+		res.status(500).json({
+			error: 'Server error',
+			details: error instanceof Error ? error.message : String(error)
+		});
 	}
 }
