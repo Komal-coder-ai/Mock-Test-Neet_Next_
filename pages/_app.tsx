@@ -127,7 +127,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>HPBOSE | NEET &amp; JEE Preparation</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images.png" />
       </Head>
       <Layout>
         <Component {...pageProps} />

@@ -7,7 +7,8 @@ import ErrorMsg from "../../components/ErrorMsg";
 import Toast from "../../components/Toast";
 
 // API Functions
-import { authApi } from '../../lib/authApi';
+import { authApi } from "../../lib/authApi";
+import { Lock, Phone } from "lucide-react";
 const sendOTP = async (phone: string) => {
   const data = await authApi({
     url: "/api/login",
@@ -22,14 +23,14 @@ const verifyOTP = async (phone: string, otp: string) => {
     url: "/api/verify-otp",
     method: "POST",
     data: { phone, otp },
-  });  
+  });
   return { res: { ok: data?.ok }, data };
 };
 
 function OTPBoxes({
   value,
   onChange,
-}: { 
+}: {
   value: string;
   onChange: (v: string) => void;
 }) {
@@ -40,7 +41,7 @@ function OTPBoxes({
     const chars = value.split("");
     while (chars.length < 6) chars.push("");
     chars[index] = val;
-    const final = chars.join("").slice(0, 6); 
+    const final = chars.join("").slice(0, 6);
     onChange(final);
     if (val && index < 5) inputs.current[index + 1]?.focus();
   }
@@ -48,7 +49,10 @@ function OTPBoxes({
   // ⭐⭐ NEW — Handle PASTE event
   function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     if (!pasted) return;
 
     // Auto-fill OTP
@@ -72,9 +76,11 @@ function OTPBoxes({
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.input
           key={i}
-         ref={(el) => { inputs.current[i] = el!; }}
+          ref={(el) => {
+            inputs.current[i] = el!;
+          }}
           value={chars[i] || ""}
-          onPaste={handlePaste}  // ⭐ NEW
+          onPaste={handlePaste} // ⭐ NEW
           onChange={(e) =>
             handleChange(i, e.target.value.replace(/[^0-9]/g, "").slice(0, 1))
           }
@@ -91,27 +97,20 @@ function OTPBoxes({
   );
 }
 
-
 export default function LoginPage() {
   const router = useRouter();
   // redirect if already logged in
   useEffect(() => {
     try {
-      const token = localStorage.getItem('accessToken')
-      const phone = localStorage.getItem('userPhone')
-      const userId = localStorage.getItem('userId')
-      const role = localStorage.getItem('userRole')
-      
+      const token = localStorage.getItem("accessToken");
+      const phone = localStorage.getItem("userPhone");
+      const userId = localStorage.getItem("userId");
+      const role = localStorage.getItem("userRole");
     } catch (e) {}
-  }, [])
+  }, []);
   const [error, setError] = useState<string | null>(null);
 
   const features = [
-    {
-      icon: "📱",
-      title: "OTP Verification",
-      desc: "Secure login with one-time password sent to your phone",
-    },
     {
       icon: "🔒",
       title: "Data Privacy",
@@ -127,7 +126,7 @@ export default function LoginPage() {
       title: "Track Progress",
       desc: "All your test history and analytics in one place",
     },
-  ]; 
+  ];
 
   return (
     <div className="min-h-screen lg:flex bg-gray-50">
@@ -162,7 +161,9 @@ export default function LoginPage() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h1 className="hero-title font-extrabold text-2xl sm:text-3xl md:text-4xl">Welcome Back!</h1>
+            <h1 className="hero-title font-extrabold text-2xl sm:text-3xl md:text-4xl">
+              Welcome Back!
+            </h1>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg text-blue-100">
               Sign in to continue your NEET & JEE preparation journey.
             </p>
@@ -186,25 +187,12 @@ export default function LoginPage() {
                 <h3 className="font-semibold text-white text-xs sm:text-sm">
                   {feature.title}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-blue-100 mt-1">{feature.desc}</p>
+                <p className="text-[10px] sm:text-xs text-blue-100 mt-1">
+                  {feature.desc}
+                </p>
               </motion.div>
             ))}
           </div>
-
-          <motion.div
-            className="mt-6 sm:mt-8"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <p className="text-xs sm:text-sm text-blue-100 mb-3">New to our platform?</p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-blue-900 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg text-sm sm:text-base"
-            >
-              Create Account →
-            </Link>
-          </motion.div>
         </div>
       </motion.div>
 
@@ -226,10 +214,14 @@ export default function LoginPage() {
               }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             >
-              🔐
+              <Lock />
             </motion.div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Sign In</h2>
-            <p className="muted mt-2 text-sm sm:text-base">Enter your phone number to login</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Sign In
+            </h2>
+            <p className="muted mt-2 text-sm sm:text-base">
+              Enter your phone number to login
+            </p>
           </div>
 
           <Formik
@@ -286,7 +278,10 @@ export default function LoginPage() {
                 >
                   <div>
                     <label className="flex text-sm font-semibold text-gray-700 mb-2 items-center gap-2">
-                      <span>📞</span> Phone Number
+                      <span>
+                        <Phone />
+                      </span>{" "}
+                      Phone Number
                     </label>
                     <Field name="phone">
                       {({ field }: any) => (
@@ -354,20 +349,12 @@ export default function LoginPage() {
               </Link>
             </p> */}
             <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs sm:text-sm text-gray-600">
-                🔒 Your data is encrypted and secure. By signing in, you agree
-                to our terms of service.
+              <p className="text-xs flex sm:text-sm text-gray-600">
+                <Lock /> Your data is encrypted and secure. By signing in, you
+                agree to our terms of service.
               </p>
             </div>
           </motion.div>
-
-          <Toast
-            message={error || null}
-            type={error ? "error" : "success"}
-            onClose={() => {
-              setError(null);
-            }}
-          />
         </motion.div>
       </div>
     </div>
