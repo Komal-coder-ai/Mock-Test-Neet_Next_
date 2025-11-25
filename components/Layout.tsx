@@ -114,9 +114,17 @@ const Navbar = ({ user }: { user?: any }) => {
             text: "Do you want to logout?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
+            confirmButtonColor: "#2563eb", // blue-600
+            cancelButtonColor: "#6366f1", // indigo-500
             confirmButtonText: "Yes, logout!",
+            background: "#f8fafc", // gray-50
+            color: "#1e293b", // slate-800
+            customClass: {
+              popup: "rounded-xl shadow-lg border border-blue-200",
+              title: "font-bold text-blue-700",
+              confirmButton: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold px-6 py-2 rounded-lg",
+              cancelButton: "bg-white text-blue-600 font-semibold px-6 py-2 rounded-lg border border-indigo-200",
+            },
           }).then((result: any) => {
             if (result.isConfirmed) {
               localStorage.clear();

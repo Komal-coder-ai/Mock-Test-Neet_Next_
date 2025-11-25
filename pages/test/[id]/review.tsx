@@ -72,9 +72,9 @@ console.log(id,"resultIdresultId");
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
           <h2 className="text-2xl font-bold">Answer Review</h2>
-          <div className="text-sm text-gray-600">Paper: {paper?.title}</div>
+          <div className="text-xl text-gray-600 font-bold">{paper?.title}</div>
         </div>
 
         <div className="space-y-4">

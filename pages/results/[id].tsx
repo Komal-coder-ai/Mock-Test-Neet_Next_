@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import { authApi } from '../../lib/authApi';
+import { authApi } from "../../lib/authApi";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import {
@@ -90,12 +91,10 @@ export default function StoredResult() {
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
-        
         </motion.div>
         <div className="text-blue-700 font-medium text-lg mb-6">
           Loading your result...
         </div>
-      
       </div>
     );
   if (!result || !paper)
@@ -158,7 +157,8 @@ export default function StoredResult() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+
       {/* Confetti celebration when result is loaded */}
       <Confetti
         numberOfPieces={120}
@@ -166,55 +166,55 @@ export default function StoredResult() {
         width={typeof window !== 'undefined' ? window.innerWidth : 800}
         height={typeof window !== 'undefined' ? window.innerHeight : 600}
       />
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-2 md:px-4">
         <motion.div
-          className="bg-white p-6 rounded-lg shadow-lg transition-shadow hover:shadow-xl"
+          className="bg-white p-4 md:p-6 rounded-lg shadow-lg transition-shadow hover:shadow-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center shadow-md">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-4">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-green-50 flex items-center justify-center shadow-md">
               <CheckCircle2 className="text-green-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-lg md:text-2xl font-bold text-gray-800">
                 {result.paperTitle || "Test Result"}
               </h2>
-              <div className="text-sm text-gray-500">
+              <div className="text-xs md:text-sm text-gray-500">
                 {new Date(result.createdAt).toLocaleString()}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="p-4 bg-blue-50 rounded-lg text-center shadow-sm">
-              <div className="text-sm text-gray-600">Total Questions</div>
-              <div className="text-lg font-bold text-blue-700">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 mb-4">
+            <div className="p-3 md:p-4 bg-blue-50 rounded-lg text-center shadow-sm">
+              <div className="text-xs md:text-sm text-gray-600">Total Questions</div>
+              <div className="text-base md:text-lg font-bold text-blue-700">
                 {result.total}
               </div>
             </div>
-            <div className="p-4 bg-green-50 rounded-lg text-center shadow-sm">
-              <div className="text-sm text-gray-600">Correct</div>
-              <div className="text-lg font-bold text-green-700">
+            <div className="p-3 md:p-4 bg-green-50 rounded-lg text-center shadow-sm">
+              <div className="text-xs md:text-sm text-gray-600">Correct</div>
+              <div className="text-base md:text-lg font-bold text-green-700">
                 {result.correctCount}
               </div>
             </div>
-            <div className="p-4 bg-red-50 rounded-lg text-center shadow-sm">
-              <div className="text-sm text-gray-600">Wrong</div>
-              <div className="text-lg font-bold text-red-700">
+            <div className="p-3 md:p-4 bg-red-50 rounded-lg text-center shadow-sm">
+              <div className="text-xs md:text-sm text-gray-600">Wrong</div>
+              <div className="text-base md:text-lg font-bold text-red-700">
                 {result.wrongCount}
               </div>
             </div>
-            <div className="p-4 bg-purple-50 rounded-lg text-center shadow-sm col-span-1">
-              <div className="text-sm text-gray-600">Score</div>
-              <div className="text-lg font-bold text-purple-700">
+            <div className="p-3 md:p-4 bg-purple-50 rounded-lg text-center shadow-sm col-span-2 md:col-span-1">
+              <div className="text-xs md:text-sm text-gray-600">Score</div>
+              <div className="text-base md:text-lg font-bold text-purple-700">
                 {/* Score calculation: +4 for correct, -1 for wrong */}
                 {result.correctCount * 4 - result.wrongCount} / {result.total * 4}
               </div>
             </div>
-            <div className="p-4 bg-yellow-50 rounded-lg text-center shadow-sm col-span-1">
-              <div className="text-sm text-gray-600">Accuracy</div>
-              <div className="text-lg font-bold text-yellow-700">
+            <div className="p-3 md:p-4 bg-yellow-50 rounded-lg text-center shadow-sm col-span-2 md:col-span-1">
+              <div className="text-xs md:text-sm text-gray-600">Accuracy</div>
+              <div className="text-base md:text-lg font-bold text-yellow-700">
                 {result.answeredCount && result.answeredCount > 0
                   ? `${((result.correctCount / result.answeredCount) * 100).toFixed(2)}%`
                   : '0%'}
@@ -222,31 +222,28 @@ export default function StoredResult() {
             </div>
           </div>
 
-        
-         
-
-          <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-            <h3 className="font-semibold text-lg mb-2 text-gray-800">
+          <div className="bg-white rounded-lg p-3 md:p-4 mb-4 shadow-sm">
+            <h3 className="font-semibold text-base md:text-lg mb-2 text-gray-800">
               Subject-wise Performance
             </h3>
             <Bar data={subjectData} options={subjectOptions} />
           </div>
 
           {/* Detailed Analysis */}
-          <div className="mt-8">
-            <h3 className="font-semibold text-lg mb-4">Detailed Analysis</h3>
-            <div className="space-y-3" >
+          <div className="mt-6 md:mt-8">
+            <h3 className="font-semibold text-base md:text-lg mb-3 md:mb-4">Detailed Analysis</h3>
+            <div className="space-y-2 md:space-y-3" >
               {subjects.map((sub) => {
                 const percent = sub.total ? Math.round((sub.correct / sub.total) * 100) : 0;
                 const accuracy = sub.attempted && sub.attempted > 0 ? ((sub.correct / sub.attempted) * 100).toFixed(2) : null;
                 return (
-                  <div key={sub.name} className="w-full bg-gray-50 border rounded-lg px-4 py-3 mb-2">
-                    <div className="flex items-center justify-between mb-1">
+                  <div key={sub.name} className="w-full bg-gray-50 border rounded-lg px-3 md:px-4 py-2 md:py-3 mb-2">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-1 gap-2 md:gap-0">
                       <span className="font-semibold text-gray-800">
                         {sub.name}
                       </span>
-                      <div className="flex items-center gap-4">
-                        <span className="text-xs text-gray-600">
+                      <div className="flex items-center gap-2 md:gap-4">
+                        <span className="text-xs md:text-sm text-gray-600">
                           {sub.correct || 0} / {sub.total || 0} correct
                         </span>
                        
@@ -261,7 +258,7 @@ export default function StoredResult() {
                           />
                         </div>
                       </div>
-                      <span className="text-xs text-gray-600 min-w-[40px] text-right">{percent}%</span>
+                      <span className="text-xs md:text-sm text-gray-600 min-w-[40px] text-right">{percent}%</span>
                     </div>
                   </div>
                 );
@@ -269,26 +266,26 @@ export default function StoredResult() {
             </div>
           </div>
 
- <div className="flex flex-col mt-4 md:flex-row gap-3 mb-6">
-          <button
-            className="w-full md:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold flex items-center justify-center gap-2 shadow"
-            onClick={() => router.push(`/test/${paper._id}/review?resultId=${result._id}`)}
-          >
-            Review Answers
-            <ArrowRight size={18} />
-          </button>
+          <div className="flex flex-col md:flex-row gap-2 md:gap-3 mt-4 md:mb-6">
+            <button
+              className="w-full md:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold flex items-center justify-center gap-2 shadow"
+              onClick={() => router.push(`/test/${paper._id}/review?resultId=${result._id}`)}
+            >
+              Review Answers
+              <ArrowRight size={18} />
+            </button>
             <button
               className="w-full md:w-auto px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold flex items-center justify-center gap-2 shadow"
               onClick={() => {
                 localStorage.removeItem(`lastSubmission_${String(id)}`);
-                router.push(`/test/${String(id)}`);
+                router.push(`/test/${paper._id}/begin`);
               }}
             >
               Try Again
             </button>
-        </div>
+          </div>
         </motion.div>
       </div>
-    </div>
+      </div>
   );
 }
