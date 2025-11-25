@@ -39,6 +39,30 @@ export default function StoredResult() {
   const [paper, setPaper] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [rankInfo, setRankInfo] = useState<any>(null);
+  const [userPhone, setUserPhone] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setUserPhone(localStorage.getItem("userPhone") || "");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (result && result.paperId && userPhone) {
+      fetch(`/api/papers/rank?userPhone=${userPhone}&paperId=${result.paperId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.ranks && Array.isArray(data.ranks)) {
+            const myRankObj = data.ranks.find(
+              (r: any) => r.userPhone === userPhone && r.paperId === result.paperId
+            );
+            setRankInfo(myRankObj || null);
+          }
+        })
+        .catch(() => setRankInfo(null));
+    }
+  }, [result, userPhone]);
 
   useEffect(() => {
     if (!id) return;
@@ -158,7 +182,6 @@ export default function StoredResult() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 md:py-8">
-
       {/* Confetti celebration when result is loaded */}
       <Confetti
         numberOfPieces={120}
@@ -167,6 +190,18 @@ export default function StoredResult() {
         height={typeof window !== 'undefined' ? window.innerHeight : 600}
       />
       <div className="max-w-4xl mx-auto px-2 md:px-4">
+        {/* Rank Display */}
+        {rankInfo && (
+          <div className="flex items-center gap-3 mb-4 p-3 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 shadow-sm">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-yellow-500 mr-1 flex-shrink-0"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z" fill="#FFD700"/></svg>
+            <span className="font-bold text-sm sm:text-base text-indigo-700 tracking-wide">Rank</span>
+            <span className="text-indigo-900 font-extrabold text-base sm:text-lg bg-white px-2 sm:px-3 py-1 rounded shadow flex items-center">
+              {rankInfo.rank}
+              <span className="text-gray-500 mx-1">/</span>
+              {rankInfo.totalParticipants}
+            </span>
+          </div>
+        )}
         <motion.div
           className="bg-white p-4 md:p-6 rounded-lg shadow-lg transition-shadow hover:shadow-xl"
           initial={{ opacity: 0 }}
@@ -220,7 +255,7 @@ export default function StoredResult() {
                   : '0%'}
               </div>
             </div>
-          </div>
+          </div> 
 
           <div className="bg-white rounded-lg p-3 md:p-4 mb-4 shadow-sm">
             <h3 className="font-semibold text-base md:text-lg mb-2 text-gray-800">

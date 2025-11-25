@@ -28,8 +28,19 @@ export default function ResultPage() {
   const { id } = router.query;
   const [submission, setSubmission] = useState<any>(null);
   const [subjectRanks, setSubjectRanks] = useState<any>(null);
+  const [rankInfo, setRankInfo] = useState<any>(null);
+  const [userPhone, setUserPhone] = useState<string>("");
   // For debugging
-  console.log(submission, "submission");
+  console.log(subjectRanks, "subjectRanks");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const phone = localStorage.getItem("userPhone") || "";
+      setUserPhone(phone);
+    }
+  }, []);
+
+ 
 
   useEffect(() => {
     if (!id) return;
@@ -39,11 +50,11 @@ export default function ResultPage() {
     } catch (e) {
       console.warn(e);
     }
-    // Fetch subject ranks from API
+    
     fetch(`/api/papers/${id}/rank`)
       .then(res => res.json())
       .then(data => {
-        setSubjectRanks(data.subjectRanks || {});
+        setSubjectRanks(data.ranks || {});
       })
       .catch(err => console.warn('Failed to fetch subject ranks', err));
   }, [id]);
@@ -106,6 +117,25 @@ export default function ResultPage() {
       {/* Confetti celebration when result is loaded */}
       <Confetti numberOfPieces={120} recycle={false} width={typeof window !== 'undefined' ? window.innerWidth : 800} height={typeof window !== 'undefined' ? window.innerHeight : 600} />
       <div className="max-w-3xl mx-auto px-2 md:px-0">
+        {/* Rank Display (always at top) */}
+        {/* <div className="mb-4">
+          {rankInfo ? (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 shadow-sm">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-yellow-500 mr-1 flex-shrink-0"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z" fill="#FFD700"/></svg>
+              <span className="font-bold text-sm sm:text-base text-indigo-700 tracking-wide">Rank</span>
+              <span className="text-indigo-900 font-extrabold text-base sm:text-lg bg-white px-2 sm:px-3 py-1 rounded shadow flex items-center">
+                {rankInfo.rank}
+                <span className="text-gray-500 mx-1">/</span>
+                {rankInfo.totalParticipants}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-100 border border-gray-200 shadow-sm">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-400 mr-1 flex-shrink-0"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z" fill="#ccc"/></svg>
+              <span className="font-bold text-sm sm:text-base text-gray-500 tracking-wide">No rank found for {userPhone}</span>
+            </div>
+          )}
+        </div> */}
         {/* Top summary */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -149,28 +179,7 @@ export default function ResultPage() {
           <Bar data={subjectData} options={subjectOptions} />
         </div>
 
-        {/* Subject Ranks Section */}
-        {subjectRanks && (
-          <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-            <h3 className="font-semibold text-lg mb-2 text-gray-800">Your Subject Ranks</h3>
-            <ul className="space-y-2">
-              {Object.entries(subjectRanks).map(([subject, ranks]: any) => {
-                // Find current user's rank for this subject
-                const myRank = ranks.find((r: any) => r.userPhone === result.userPhone);
-                return (
-                  <li key={subject} className="flex justify-between items-center border-b pb-2">
-                    <span className="font-semibold text-gray-700">{subject}</span>
-                    {myRank ? (
-                      <span className="text-blue-600 font-bold">Rank: {myRank.rank}</span>
-                    ) : (
-                      <span className="text-gray-400">No rank</span>
-                    )}
-                  </li> 
-                );
-              })}
-            </ul>
-          </div>
-        )}
+       
 
         {/* Detailed Analysis */}
         <div className="mt-8">

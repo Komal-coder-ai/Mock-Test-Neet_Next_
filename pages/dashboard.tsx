@@ -88,19 +88,24 @@ export default function Dashboard() {
     }
   }
 
+  // Fetch last try rank for each paper
   useEffect(() => {
-    if (phone) {
+    if (phone && papers.length > 0) {
       (async () => {
-        try {
-          const res = await fetch(`/api/papers/rank?userPhone=${phone}`);
-          const rankData = await res.json();
-          setSubjectRanksMap({ userRanks: rankData.ranks || [] });
-        } catch (err) {
-          setSubjectRanksMap({ userRanks: [] });
+        const ranks: Record<string, any> = {};
+        for (const p of papers) {
+          try {
+            const res = await fetch(`/api/papers/rank?userPhone=${phone}&paperId=${p._id}`);
+            const rankData = await res.json();
+            ranks[p._id] = rankData.ranks && rankData.ranks[0] ? rankData.ranks[0] : null;
+          } catch (err) {
+            ranks[p._id] = null;
+          }
         }
+        setSubjectRanksMap(ranks);
       })();
     }
-  }, [phone]);
+  }, [phone, papers]);
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
@@ -205,14 +210,8 @@ export default function Dashboard() {
             {!loading &&
               papers.map((p, idx) => {
                 // Only show rank for the paper that matches user's rank object
-                const userRanksArr = subjectRanksMap.userRanks || [];
-                let myRankObj = null;
-                if (user && userRanksArr.length > 0) {
-                  myRankObj = userRanksArr.find(
-                    (r: any) =>
-                      r.paperId === p._id && r.userPhone === user.phone
-                  );
-                }
+                // Last try rank for this paper
+                const myRankObj = subjectRanksMap[p._id] || null;
                 // Professional rank icons
                 const rankIcons = [
                   <span
@@ -306,7 +305,7 @@ export default function Dashboard() {
                               className="text-yellow-500 mr-1 flex-shrink-0"
                             />
                             <span className="font-bold text-sm sm:text-base text-indigo-700 tracking-wide">
-                              Rank
+                              Last Try Rank
                             </span>
                             <span className="text-indigo-900 font-extrabold text-base sm:text-lg bg-white px-2 sm:px-3 py-1 rounded shadow flex items-center">
                               {myRankObj.rank}
