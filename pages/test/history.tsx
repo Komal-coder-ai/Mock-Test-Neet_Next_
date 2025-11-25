@@ -88,15 +88,16 @@ export default function TestHistoryPage() {
         )}
 
         {/* Responsive grid for test cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
           {results.map((r) => (
             <motion.div
               key={`list-${r._id}`}
-              className="bg-white rounded-lg p-4 md:p-6 shadow flex flex-col justify-between h-full"
+              className="bg-white rounded-lg p-4 md:p-6 shadow flex flex-col   justify-between h-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <div className="flex flex-col gap-2 mb-4">
+              <div className="lg:flex lg:flex-row justify-between">
+                <div className="flex flex-col gap-2 mb-4">
                 <h3 className="font-semibold text-base md:text-lg truncate">{r.paperTitle || "Untitled Test"}</h3>
                 <div className="text-xs md:text-sm text-gray-500">{new Date(r.createdAt).toLocaleDateString()}</div>
               </div>
@@ -113,6 +114,7 @@ export default function TestHistoryPage() {
                     {r.answeredCount && r.answeredCount > 0 ? `${((r.correctCount / r.answeredCount) * 100).toFixed(2)}%` : '0%'}
                   </div>
                 </div>
+              </div>
               </div>
               <div className="border-t pt-4 mt-auto flex flex-col md:flex-row gap-2">
                 <button
