@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
   History,
+  ArrowRight,
 } from "lucide-react";
 import Confetti from "react-confetti";
 import { Bar } from "react-chartjs-2";
@@ -248,16 +249,7 @@ export default function StoredResult() {
                         <span className="text-xs text-gray-600">
                           {sub.correct || 0} / {sub.total || 0} correct
                         </span>
-                        
-                        <button
-                          className="items-center justify-center gap-2 px-4 py-2 border rounded-full text-sm bg-blue-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(`/test/${paper._id}/review`, "_blank");
-                          }}
-                        >
-                          view
-                        </button>
+                       
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-1">
@@ -277,20 +269,24 @@ export default function StoredResult() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
+ <div className="flex flex-col mt-4 md:flex-row gap-3 mb-6">
+          <button
+            className="w-full md:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold flex items-center justify-center gap-2 shadow"
+            onClick={() => router.push(`/test/${paper._id}/review?resultId=${result._id}`)}
+          >
+            Review Answers
+            <ArrowRight size={18} />
+          </button>
             <button
-              className="px-4 py-2 rounded-lg border"
-              onClick={() => router.push("/test/history")}
+              className="w-full md:w-auto px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold flex items-center justify-center gap-2 shadow"
+              onClick={() => {
+                localStorage.removeItem(`lastSubmission_${String(id)}`);
+                router.push(`/test/${String(id)}`);
+              }}
             >
-              Back to History
+              Try Again
             </button>
-            <button
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white"
-              onClick={() => router.push("/")}
-            >
-              Home
-            </button>
-          </div>
+        </div>
         </motion.div>
       </div>
     </div>

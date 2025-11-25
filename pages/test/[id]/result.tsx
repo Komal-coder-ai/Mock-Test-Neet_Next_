@@ -197,7 +197,7 @@ export default function ResultPage() {
                         />
                       </div>
                     </div>
-                    <span className="text-xs text-gray-600 min-w-[40px] text-right">{percent}%</span>
+                    <span className="t  ext-xs text-gray-600 min-w-[40px] text-right">{percent}%</span>
                   </div>
                 </div>
               );

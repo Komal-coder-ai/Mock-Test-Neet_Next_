@@ -6,29 +6,47 @@ import { CheckCircle2, XCircle } from "lucide-react";
 
 export default function ReviewPage() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, resultId, subject } = router.query;
   const [loading, setLoading] = useState(false);
   const [submission, setSubmission] = useState<any>(null);
   const [paper, setPaper] = useState<any>(null);
-console.log(loading,"loadingloading");
+console.log(id,"resultIdresultId");
+
 
   useEffect(() => {
     if (!id) return;
-    try {
-      const raw = localStorage.getItem(`lastSubmission_${String(id)}`);
-      if (raw) setSubmission(JSON.parse(raw));
-    } catch (e) {
-      console.warn(e);
+      setLoading(true);
+    // If resultId is present, fetch answers from backend (history mode)
+    if (resultId) {
+      authApi({ url: `/api/results/${String(resultId)}` })
+        .then((data: any) => {
+          if (data?.ok && data.result) {
+            setSubmission({ answers: data.result.answers || {} });
+            // Fetch paper using paperId from result
+            return authApi({ url: `/api/papers/${data.result.paperId}` });
+          }
+        })
+        .then((paperData: any) => {
+          if (paperData?.ok) setPaper(paperData.paper);
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    } else {
+      // Submission mode: use localStorage
+      try {
+        const raw = localStorage.getItem(`lastSubmission_${String(id)}`);
+        if (raw) setSubmission(JSON.parse(raw));
+      } catch (e) {
+        console.warn(e);
+      }
+      authApi({ url: `/api/papers/${String(id)}` })
+        .then((data: any) => {
+          if (data?.ok) setPaper(data.paper);
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
     }
-
-    setLoading(true);
-    authApi({ url: `/api/papers/${String(id)}` })
-      .then((data: any) => {
-        if (data?.ok) setPaper(data.paper);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, resultId]);
 
   if (!submission && loading) {
     return (
@@ -45,6 +63,12 @@ console.log(loading,"loadingloading");
 
   const answers = submission?.answers || {};
 
+  // Filter questions by subject if provided
+  let questions = paper?.questions || [];
+  if (subject && typeof subject === 'string') {
+    questions = questions.filter((q: any) => q.subject === subject);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -54,11 +78,10 @@ console.log(loading,"loadingloading");
         </div>
 
         <div className="space-y-4">
-          {(paper?.questions || []).map((q: any, idx: number) => {
+          {questions.map((q: any, idx: number) => {
             const qid = q && q._id ? String(q._id) : String(idx);
             const selected = answers[qid];
-            const correct =
-              typeof q.correctIndex === "number" ? q.correctIndex : null;
+            const correct = typeof q.correctIndex === "number" ? q.correctIndex : null;
             const isCorrect =
               selected !== undefined &&
               selected !== null &&
@@ -94,13 +117,11 @@ console.log(loading,"loadingloading");
 
                 <div className="mt-4 space-y-2">
                   {(q.options || []).map((opt: string, oi: number) => {
-                    const isSelected =
-                      selected !== undefined && Number(selected) === oi;
+                    const isSelected = selected !== undefined && Number(selected) === oi;
                     const isAnswer = correct !== null && Number(correct) === oi;
                     let cls = "border rounded-lg p-3";
                     if (isAnswer)
-                      cls =
-                        "border-2 border-green-400 bg-green-50 rounded-lg p-3";
+                      cls = "border-2 border-green-400 bg-green-50 rounded-lg p-3";
                     else if (isSelected && !isAnswer)
                       cls = "border-2 border-red-300 bg-red-50 rounded-lg p-3";
                     else cls = "border rounded-lg p-3";
