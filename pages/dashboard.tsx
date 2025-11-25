@@ -304,9 +304,7 @@ export default function Dashboard() {
                               size={18}
                               className="text-yellow-500 mr-1 flex-shrink-0"
                             />
-                            <span className="font-bold text-sm sm:text-base text-indigo-700 tracking-wide">
-                              Last Try Rank
-                            </span>
+                            
                             <span className="text-indigo-900 font-extrabold text-base sm:text-lg bg-white px-2 sm:px-3 py-1 rounded shadow flex items-center">
                               {myRankObj.rank}
                               <span className="text-gray-500 mx-1">/</span>

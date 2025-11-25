@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Sort by score DESC, then by createdAt ASC (earlier submission wins tie)
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return new Date(a.createdAt) - new Date(b.createdAt);
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
     // Assign ranks
     const ranks = scored.map((r, idx) => ({
