@@ -31,7 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const normalizedAllQuestions = (paper.questions || []).map((q: any) => ({
         _id: q._id,
         text: q.text,
-        options: q.options,
+        image: q.image || '',
+        options: (q.options || []).map((opt: any) => ({
+          text: opt.text,
+          image: opt.image || ''
+        })),
         correctIndex: q.correctIndex,
         subject: q.subject || ''
       }))
@@ -44,7 +48,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }).map((q: any) => ({
           _id: q._id,
           text: q.text,
-          options: q.options,
+          image: q.image || '',
+          options: (q.options || []).map((opt: any) => ({
+            text: opt.text,
+            image: opt.image || ''
+          })),
           correctIndex: q.correctIndex,
           subject: q.subject || ''
         }))

@@ -101,6 +101,9 @@ console.log(id,"resultIdresultId");
                       Question {idx + 1} • {q.subject || "General"}
                     </div>
                     <div className="mt-2 text-gray-900">{q.text}</div>
+                                      {q.image && (
+                                        <img src={q.image} alt="Question" className="h-16 my-2" />
+                                      )}
                   </div>
                   <div className="text-right">
                     {isCorrect ? (
@@ -116,7 +119,7 @@ console.log(id,"resultIdresultId");
                 </div>
 
                 <div className="mt-4 space-y-2">
-                  {(q.options || []).map((opt: string, oi: number) => {
+                  {(q.options || []).map((opt: any, oi: number) => {
                     const isSelected = selected !== undefined && Number(selected) === oi;
                     const isAnswer = correct !== null && Number(correct) === oi;
                     let cls = "border rounded-lg p-3";
@@ -138,7 +141,12 @@ console.log(id,"resultIdresultId");
                           >
                             {String.fromCharCode(65 + oi)}
                           </div>
-                          <div className="text-gray-900">{opt}</div>
+                          <div className="text-gray-900">
+                            {opt.text}
+                            {opt.image && (
+                              <img src={opt.image} alt={`Option ${oi + 1}`} className="h-8 ml-2 inline-block align-middle" />
+                            )}
+                          </div>
                           {isAnswer && (
                             <div className="ml-auto text-sm text-green-700 font-semibold">
                               Correct Answer

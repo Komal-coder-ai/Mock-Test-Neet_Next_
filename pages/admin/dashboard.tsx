@@ -19,19 +19,21 @@ export default function AdminDashboard() {
     "Physics" | "Chemistry" | "Mathematics"
   >("Physics");
   const [questionText, setQuestionText] = useState("");
-  const [options, setOptions] = useState(["", "", "", ""]);
+  const [options, setOptions] = useState([{ text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }]);
   const [correctIndex, setCorrectIndex] = useState<number>(0);
   const [qMessage, setQMessage] = useState<string | null>(null);
   const [qError, setQError] = useState<string | null>(null);
+  const [questionImage, setQuestionImage] = useState<string | ArrayBuffer | null>(null);
   // questions for selected paper and edit state
   const [paperQuestions, setPaperQuestions] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQuestionText, setEditQuestionText] = useState("");
-  const [editOptions, setEditOptions] = useState(["", "", "", ""]);
+  const [editOptions, setEditOptions] = useState([{ text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }]);
   const [editCorrectIndex, setEditCorrectIndex] = useState<number>(0);
   const [editSubject, setEditSubject] = useState<
     "Physics" | "Chemistry" | "Mathematics" | ""
   >("");
+  const [editQuestionImage, setEditQuestionImage] = useState<string | ArrayBuffer | null>(null);
   // UI mode: 'papers' or 'questions'
   const [mode, setMode] = useState<"papers" | "questions">("papers");
   const [showCreatePaper, setShowCreatePaper] = useState(true);
@@ -177,8 +179,13 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (!questionText || options.some((o) => !o)) {
-      setQError("Question and all options are required");
+    // At least one field in each option
+    if (!questionText && !questionImage) {
+      setQError("Enter question text or select an image.");
+      return;
+    }
+    if (options.some((o) => !o.text && !o.image)) {
+      setQError("Each option must have text or image.");
       return;
     }
 
@@ -191,6 +198,7 @@ export default function AdminDashboard() {
 
     const body = {
       text: questionText,
+      image: questionImage, // <-- Ensure image is sent
       options,
       correctIndex,
       subject,
@@ -206,7 +214,13 @@ export default function AdminDashboard() {
       if (data?.ok) {
         setQMessage("Question added");
         setQuestionText("");
-        setOptions(["", "", "", ""]);
+        setQuestionImage("");
+        setOptions([
+          { text: "", image: "" },
+          { text: "", image: "" },
+          { text: "", image: "" },
+          { text: "", image: "" }
+        ]);
         setCorrectIndex(0);
         // refresh question list
         if (selectedPaper) fetchPaperDetails(selectedPaper);
@@ -221,19 +235,21 @@ export default function AdminDashboard() {
   function startEdit(q: any) {
     setEditingId(String(q._id || ""));
     setEditQuestionText(q.text || "");
-    setEditOptions(q.options ? [...q.options] : ["", "", "", ""]);
+    setEditOptions(q.options ? [...q.options] : [{ text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }]);
     setEditCorrectIndex(
       typeof q.correctIndex === "number" ? q.correctIndex : 0
     );
     setEditSubject((q.subject as any) || "");
+    setEditQuestionImage(null);
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditQuestionText("");
-    setEditOptions(["", "", "", ""]);
+    setEditOptions([{ text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }, { text: "", image: "" }]);
     setEditCorrectIndex(0);
     setEditSubject("");
+    setEditQuestionImage(null);
   }
 
   async function saveEdit(e: React.FormEvent) {
@@ -251,6 +267,7 @@ export default function AdminDashboard() {
         method: "PUT",
         data: {
           text: editQuestionText,
+          image: editQuestionImage,
           options: editOptions, 
           correctIndex: editCorrectIndex,
           subject: editSubject,
@@ -292,6 +309,52 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       setQError("Network error");
+    }
+  }
+
+  // --- IMAGE UPLOAD HANDLERS ---
+  function handleQuestionImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setQuestionImage(ev.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  function handleOptionImageFile(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const copy = [...options];
+        copy[i].image = ev.target?.result as string;
+        setOptions(copy);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  function handleEditQuestionImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setEditQuestionImage(ev.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  function handleEditOptionImageFile(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const copy = [...editOptions];
+        copy[i].image = ev.target?.result as string;
+        setEditOptions(copy);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -543,6 +606,16 @@ export default function AdminDashboard() {
                       onChange={(e) => setQuestionText(e.target.value)}
                       className="mt-1 block w-full border rounded p-2"
                     />
+                    <label className="block text-sm font-medium mt-2">Question Image (optional)</label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleQuestionImageFile}
+                        className="mt-1 block border rounded p-2"
+                      />
+                      {questionImage && <img src={questionImage as string} alt="Preview" className="h-12" />}
+                    </div>
                   </div>
 
                   {[0, 1, 2, 3].map((i) => (
@@ -551,16 +624,25 @@ export default function AdminDashboard() {
                         Option {i + 1}
                       </label>
                       <input
-                        value={options[i]}
-                        onChange={(e) =>
-                          setOptions((prev) => {
-                            const copy = [...prev];
-                            copy[i] = e.target.value;
-                            return copy;
-                          })
-                        }
+                        value={options[i].text}
+                        onChange={(e) => {
+                          const copy = [...options];
+                          copy[i].text = e.target.value;
+                          setOptions(copy);
+                        }}
                         className="mt-1 block w-full border rounded p-2"
+                        placeholder="Option text (optional)"
                       />
+                      <label className="block text-xs font-medium mt-1">Option Image (optional)</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleOptionImageFile(i, e)}
+                          className="mt-1 block border rounded p-2"
+                        />
+                        {options[i].image && <img src={options[i].image} alt="Preview" className="h-12" />}
+                      </div>
                     </div>
                   ))}
 
@@ -617,16 +699,26 @@ export default function AdminDashboard() {
                       {editingId === String(q._id) ? (
                         <form onSubmit={saveEdit} className="space-y-3">
                           <div>
-                            <label className="block text-sm font-medium">
-                              Question
-                            </label>
-                            <textarea
-                              value={editQuestionText}
-                              onChange={(e) =>
-                                setEditQuestionText(e.target.value)
-                              }
-                              className="mt-1 block w-full border rounded p-2"
-                            />
+                            <label className="block text-sm font-medium">Question</label>
+                            <div className="flex flex-col gap-2">
+                              <textarea
+                                value={editQuestionText}
+                                onChange={(e) => setEditQuestionText(e.target.value)}
+                                className="mt-1 block w-full border rounded p-2"
+                              />
+                              {editQuestionImage && (
+                                <img src={editQuestionImage as string} alt="Question Preview" className="h-16" />
+                              )}
+                              <label className="block text-sm font-medium mt-2">Question Image (optional)</label>
+                              <div className="flex gap-2 items-center">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleEditQuestionImageFile}
+                                  className="mt-1 block border rounded p-2"
+                                />
+                              </div>
+                            </div>
                           </div>
                           {[0, 1, 2, 3].map((i) => (
                             <div key={i}>
@@ -634,16 +726,25 @@ export default function AdminDashboard() {
                                 Option {i + 1}
                               </label>
                               <input
-                                value={editOptions[i]}
-                                onChange={(e) =>
-                                  setEditOptions((prev) => {
-                                    const copy = [...prev];
-                                    copy[i] = e.target.value;
-                                    return copy;
-                                  })
-                                }
+                                value={editOptions[i].text}
+                                onChange={(e) => {
+                                  const copy = [...editOptions];
+                                  copy[i].text = e.target.value;
+                                  setEditOptions(copy);
+                                }}
                                 className="mt-1 block w-full border rounded p-2"
+                                placeholder="Option text (optional)"
                               />
+                              <label className="block text-xs font-medium mt-1">Option Image (optional)</label>
+                              <div className="flex gap-2 items-center">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleEditOptionImageFile(i, e)}
+                                  className="mt-1 block border rounded p-2"
+                                />
+                                {editOptions[i].image && <img src={editOptions[i].image} alt="Preview" className="h-12" />}
+                              </div>
                             </div>
                           ))}
                           <div>
@@ -712,21 +813,25 @@ export default function AdminDashboard() {
                               </span>
                             </div>
                             <p className="mt-2 text-sm">{q.text}</p>
+                            {q.image && (
+                              <img src={q.image} alt="Question" className="h-16 my-2" />
+                            )}
                             <ul className="mt-2 text-sm list-decimal list-inside">
-                              {(q.options || []).map(
-                                (o: string, idx: number) => (
-                                  <li
-                                    key={idx}
-                                    className={`${
-                                      q.correctIndex === idx
-                                        ? "font-semibold text-green-700"
-                                        : ""
-                                    }`}
-                                  >
-                                    {o}
-                                  </li>
-                                )
-                              )}
+                              {(q.options || []).map((o: any, idx: number) => (
+                                <li
+                                  key={idx}
+                                  className={`${
+                                    q.correctIndex === idx
+                                      ? "font-semibold text-green-700"
+                                      : ""
+                                  }`}
+                                >
+                                  {o.text}
+                                  {o.image && (
+                                    <img src={o.image} alt={`Option ${idx + 1}`} className="h-8 ml-2 inline-block align-middle" />
+                                  )}
+                                </li>
+                              ))}
                             </ul>
                           </div>
                           <div className="ml-4 flex flex-col gap-2">

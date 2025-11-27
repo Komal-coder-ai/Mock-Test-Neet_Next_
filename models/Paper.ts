@@ -30,8 +30,14 @@ const PaperSchema: Schema = new Schema(
     date: { type: Date },
     questions: [
       {
-        text: { type: String, required: true },
-        options: { type: [String], required: true },
+        text: { type: String },
+        image: { type: String },
+        options: [
+          {
+            text: { type: String },
+            image: { type: String }
+          }
+        ],
         correctIndex: { type: Number, required: true },
         subject: { type: String }
       }

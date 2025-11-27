@@ -17,9 +17,16 @@ import {
 } from "lucide-react";
 import { authApi } from "../../../lib/authApi";
 
+type Option = {
+  text?: string;
+  image?: string;
+};
+
 type Question = {
+  _id: string;
   text: string;
-  options: string[];
+  image?: string;
+  options: Option[];
   correctIndex: number;
   subject?: string;
 };
@@ -27,8 +34,17 @@ type Question = {
 type Paper = {
   _id: string;
   title: string;
+  category?: string;
   durationMinutes: number;
   totalQuestions: number;
+  date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  official?: boolean;
+  exam?: string;
+  icon?: string;
+  name?: string;
+  source?: string;
   questions?: Question[];
 };
 
@@ -433,16 +449,23 @@ export default function TestRunner() {
                   )}
                 </div>
 
-                {/* Question Text */}
+                {/* Question Image & Text */}
                 <div className="mb-6 sm:mb-8">
+                  {currentQ?.image && (
+                    <img
+                      src={currentQ.image}
+                      alt="Question Image"
+                      className="mb-4 max-h-48 rounded shadow"
+                    />
+                  )}
                   <p className="text-base sm:text-lg font-medium text-gray-900 leading-relaxed">
-                    {currentQ?.text || "No question available"}
+                    {currentQ?.text || ""}
                   </p>
                 </div>
 
                 {/* Options */}
                 <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                  {(currentQ?.options || []).map((opt, i) => {
+                  {(currentQ?.options || []).map((opt: Option, i: number) => {
                     const isSelected = selectedAnswers[currentIndex] === i;
                     return (
                       <motion.button
@@ -466,7 +489,12 @@ export default function TestRunner() {
                           >
                             {String.fromCharCode(65 + i)}
                           </div>
-                          <span className="text-gray-900">{opt}</span>
+                          <span className="text-gray-900 flex items-center gap-2">
+                            {opt.text}
+                            {opt.image && (
+                              <img src={opt.image} alt={`Option ${i + 1}`} className="h-8 rounded shadow inline-block align-middle" />
+                            )}
+                          </span>
                           {isSelected && (
                             <CheckCircle2
                               size={20}
